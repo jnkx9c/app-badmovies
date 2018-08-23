@@ -12,11 +12,16 @@ import javax.persistence.Table;
 public class Movie extends BaseEntityObject{
 
 	
+	@Column(length=2048)
 	private String actors;
+
+	@Column(length=2048)
 	private String awards;
 	private String boxOffice;
 	private String country;
 	private String dvd;
+	
+	@Column(length=2048)
 	private String director;
 	private String genre;
 	private String language;
@@ -34,7 +39,10 @@ public class Movie extends BaseEntityObject{
 	private String title;
 	private String type;
 	private String website;
+
+	@Column(length=2048)
 	private String writer;
+	
 	@Column(name="year_released")
 	private String year;
 	@Column(unique=true)

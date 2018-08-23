@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.annotation.PostConstruct;
+
 import org.kilgore.badmovies.entity.Movie;
 import org.kilgore.badmovies.repo.MovieRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,15 @@ public class MovieDataImporterService {
 		MovieJsonDTO movie = mapper.readValue(new URL("http://www.omdbapi.com/?apikey=d4463eaa&i=tt0270846&plot=full"), MovieJsonDTO.class);
 		System.out.println(movie);
 		System.out.println(movie.getRatings());	
+	}
+	
+	@PostConstruct
+	public void initDatabase() {
+		importMovie("tt0065421");
+		importMovie("tt0448694");
+		importMovie("tt0095776");
+		//https://www.imdb.com/list/ls066657261/
+		
 	}
 	
 	

@@ -21,6 +21,12 @@ public class StoreFrontController {
 	
 	
 	@RequestMapping({"/",""})
+	public ModelAndView splashpage(Model model) {
+
+		return new ModelAndView("store/splash");
+	}
+	
+	@RequestMapping({"/home"})
 	public ModelAndView homepage(Model model) {
 		List<Movie> movies = storeFrontService.listMovies();
 		model.addAttribute("movies", movies);

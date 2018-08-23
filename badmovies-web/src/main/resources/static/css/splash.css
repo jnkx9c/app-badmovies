@@ -1,0 +1,108 @@
+@charset "ISO-8859-1";
+
+
+
+
+body, html {
+    height: 100%;
+}
+.bg {
+    /* The image used */
+    background-image: url("/images/angry-animal-cat-1331821.jpg");
+
+    /* Full height */
+    height: 100%;
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    
+  position: relative;
+  opacity: 0.65;
+}
+
+.logo{
+	
+	background-image: url('/images/catmovieslogo.svg');
+	height: 100%;
+	width: 75%;
+	background-position: center;
+	background-repeat: no-repeat;
+	position: relative;
+}
+
+  .imgbox {
+   display: grid;
+   height: 100%;
+  }
+  .center-fit {
+   max-width: 100%;
+   max-height: 100vh;
+   margin: auto;
+  }
+
+
+.caption {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  color: #000;
+}
+
+.caption span.border {
+  background-color: #111;
+  color: #fff;
+  padding: 18px;
+  font-size: 25px;
+  letter-spacing: 10px;
+
+
+footer{
+  background-color: #111111;
+  bottom: 0;
+  box-shadow: 0 -1px 2px rgba(0,0,0,0.4);
+  height: 45px;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 100000;
+}
+
+footer h2{
+  color: #EEEEEE;
+  font-size: 14px;
+  font-weight: normal;
+  left: 50%;
+  margin-left: -400px;
+  padding: 13px 0 0;
+  position: absolute;
+  width: 540px;
+}
+
+footer h2 i{
+  font-style:normal;
+  color:#888;
+}
+
+footer a.tzine,a.tzine:visited{
+  color: #999999;
+  font-size: 12px;
+  left: 50%;
+  margin: 16px 0 0 110px;
+  position: absolute;
+  text-decoration: none;
+  top: 0;
+}
+
+footer a i{
+  color:#ccc;
+  font-style: normal;
+}
+
+footer a i b{
+  color:#c92020;
+  font-weight: normal;
+}  
