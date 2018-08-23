@@ -24,7 +24,8 @@ public class StoreFrontController {
 	public ModelAndView homepage(Model model) {
 		List<Movie> movies = storeFrontService.listMovies();
 		model.addAttribute("movies", movies);
-		return new ModelAndView("store/home");
+		model.addAttribute("basepage","home");
+		return new ModelAndView("store/storefront_basepage");
 	}
 	
 	
