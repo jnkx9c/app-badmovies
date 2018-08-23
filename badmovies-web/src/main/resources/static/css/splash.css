@@ -42,6 +42,16 @@ body, html {
    margin: auto;
   }
 
+.formdata{
+	width: 75%;
+	height: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: auto;
+	margin-bottom: auto;
+	
+}
+
 
 .caption {
   position: absolute;
