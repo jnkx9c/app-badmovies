@@ -1,0 +1,11 @@
+@charset "ISO-8859-1";
+
+
+.moviebox-title{
+	font-size: 10pt;
+}
+
+.moviebox-poster{
+	height: 33%;
+	width: 46%;
+}

@@ -3,11 +3,22 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
 
-Movies = <c:out value="${movies}"></c:out>
-<table>
-	<c:forEach items="${movies}" var="movie">
-		<tr><td>Title</td><td><c:out value="${movie.title}"/></td></tr>
-	
-	</c:forEach>
 
-</table>
+
+  <div class="container">
+	<c:forEach items="${movies}" var="movie" varStatus="status">
+      <c:if test="${status.index%6 eq 0}">
+        <div class="row">
+      </c:if>
+      <div class="moviecontainer col-6 col-sm-4 col-md-4 col-lg-3 col-xl-3">
+       <img class="moviebox-poster" alt="" src="${movie.poster}"></img>
+       <div class="moviebox-title"><c:out value="${movie.title}"/></div>
+      </div>
+      <c:if test="${status.index % 6 eq 5}">
+        </div>
+      </c:if>
+      
+      
+      
+	</c:forEach>
+  </div>

@@ -55,6 +55,36 @@ public class MovieDataImporterService {
 		importMovie("tt0065421");
 		importMovie("tt0448694");
 		importMovie("tt0095776");
+		
+		importMovie("tt0037558");
+		importMovie("tt0034583");
+		importMovie("tt0112471");
+		importMovie("tt0381681");
+		importMovie("tt0053472");
+		importMovie("tt0118694");
+		importMovie("tt0053604");
+		importMovie("tt0091167");
+		importMovie("tt0338013");
+		importMovie("tt0091867");
+		importMovie("tt0055032");
+		importMovie("tt0047811");
+		importMovie("tt0031381");
+		importMovie("tt0050105");
+		importMovie("tt0058450");
+		importMovie("tt0335266");
+		importMovie("tt0046250");
+		importMovie("tt0910970");
+		importMovie("tt0064612");
+		importMovie("tt0046511");
+		importMovie("tt0059113");
+		importMovie("tt0067185");
+		importMovie("tt0098635");
+		importMovie("tt0098258");
+		importMovie("tt0097322");
+		importMovie("tt0038733");
+
+		
+		
 		//https://www.imdb.com/list/ls066657261/
 		
 	}

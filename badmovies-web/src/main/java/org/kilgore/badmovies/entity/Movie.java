@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name="Movie")
 public class Movie extends BaseEntityObject{
@@ -26,7 +28,8 @@ public class Movie extends BaseEntityObject{
 	private String genre;
 	private String language;
 	private String metascore;
-	@Column(length=2048)
+	@Column
+	@Type(type="text")
 	private String plot;
 	private String poster;
 	private String production;
