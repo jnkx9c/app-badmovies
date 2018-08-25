@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -53,6 +54,7 @@ public class Movie extends BaseEntityObject{
 	private String imdbRating;
 	private String imdbVotes;
 	
+	private Float price;
 	
 	public String getActors() {
 		return actors;
@@ -203,6 +205,12 @@ public class Movie extends BaseEntityObject{
 	}
 	public void setImdbVotes(String imdbVotes) {
 		this.imdbVotes = imdbVotes;
+	}
+	public Float getPrice() {
+		return price;
+	}
+	public void setPrice(Float price) {
+		this.price = price;
 	}	
 	
 	

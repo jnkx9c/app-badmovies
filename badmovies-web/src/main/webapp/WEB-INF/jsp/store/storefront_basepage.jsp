@@ -25,20 +25,49 @@
 <body>
 
   <div class="container movie-maincontainer">
-    <nav class="navbar navbar-dark bg-primary navbar-inverse">
-      THis is my navbar!!!   number of items in the shopping cart are <c:out value="${storefrontresponse.shoppingCart.itemCount}"/>
-        
-        <div class="fa-4x">
-        <a href="shoppingcart">
-          
-            <span class="fa-layers fa-fw">
-              <i class="fas fa-shopping-cart"></i>
-              <span id="shoppingcart-itemcount" class="fa-layers-counter" style="background:Tomato"><c:out value="${storefrontresponse.shoppingCart.itemCount}"/></span>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <%--<a class="navbar-brand" href="#">Navbar</a> --%>
+  <div class="navbar-brand">
+    BAD MOVIES
+  <a href="shoppingcart" id="cart">
+    <i class="fa fa-shopping-cart"></i> Cart 
+      <span id="shoppingcart-itemcount" class="badge badge-secondary">
+      <c:out value="${storefrontresponse.shoppingCart.itemCount}"/>
+      </span>
+  </a>  
+  </div>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav  mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/storefront/home">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Features</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Pricing</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">Disabled</a>
+      </li>
+    </ul>
+    <%--
+    <ul class="navbar-nav">
+        <li><a href="shoppingcart" id="cart">
+            <i class="fa fa-shopping-cart"></i> Cart 
+            <span id="shoppingcart-itemcount" class="badge badge-secondary">
+            <c:out value="${storefrontresponse.shoppingCart.itemCount}"/>
             </span>
-          
-        </a>
-        </div>
-    </nav>
+           </a>
+        </li>
+    </ul>
+     --%>
+    
+  </div>
+</nav>
     <div class="movie-maincontent">
       <jsp:include page="${storefrontresponse.view}.jsp"></jsp:include> 
     </div>
