@@ -86,7 +86,7 @@ public class StoreFrontController {
 		
 		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(storeFrontService.listMovies());
 		//mark the movies that are already in the shopping cart
-		ShoppingCart shoppingCart = getShoppingCart(httpSession);
+		ShoppingCart shoppingCart = getShoppingCart();
 		if(shoppingCart!=null && shoppingCart.getMovieIds()!=null) {
 			for(MovieDTO movie: movieDTOs) {
 				movie.setInCart(shoppingCart.getMovieIds().contains(movie.getMovieId()));
@@ -99,7 +99,7 @@ public class StoreFrontController {
 	@RequestMapping({"/rest/shoppingcart"})
 	@ResponseBody
 	public ShoppingCart shoppingCart(HttpSession session) {
-		ShoppingCart shoppingCart = getShoppingCart(session);
+		ShoppingCart shoppingCart = getShoppingCart();
 		return shoppingCart;
 	}
 	
@@ -109,7 +109,7 @@ public class StoreFrontController {
 			@RequestParam(name="action") String action,
 			@RequestParam(name="movieid", required=true) Integer movieid, 
 			HttpSession session) {
-		ShoppingCart shoppingCart = getShoppingCart(session);
+		ShoppingCart shoppingCart = getShoppingCart();
 		if(action!=null && movieid!=null) {
 			switch (action) {
 			case "add":
@@ -132,21 +132,21 @@ public class StoreFrontController {
 	
 	
 	private ShoppingCart getShoppingCart() {
-		return getShoppingCart(httpSession);
+		return storeFrontService.getShoppingCart();
 	}
-	public static ShoppingCart getShoppingCart(HttpSession session) {
-		ShoppingCart shoppingCart = null;
-		if(session!=null) {
-			shoppingCart = (ShoppingCart) session.getAttribute("SHOPPING_CART");
-			if(shoppingCart==null) {
-				shoppingCart = new ShoppingCart();
-				session.setAttribute("SHOPPING_CART", shoppingCart);
-			}
-		}
-		
-		
-		return shoppingCart;
-	}
+//	public static ShoppingCart getShoppingCart(HttpSession session) {
+//		ShoppingCart shoppingCart = null;
+//		if(session!=null) {
+//			shoppingCart = (ShoppingCart) session.getAttribute("SHOPPING_CART");
+//			if(shoppingCart==null) {
+//				shoppingCart = new ShoppingCart();
+//				session.setAttribute("SHOPPING_CART", shoppingCart);
+//			}
+//		}
+//		
+//		
+//		return shoppingCart;
+//	}
 	
 	
 }

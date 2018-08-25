@@ -18,8 +18,11 @@ public class StoreFrontService {
 	@Autowired
 	private MovieRepo movieRepository;
 	
+	@Autowired
+	private HttpSession session;
 	
-	public static ShoppingCart getShoppingCart(HttpSession session) {
+	
+	public ShoppingCart getShoppingCart() {
 		ShoppingCart shoppingCart = null;
 		if(session!=null) {
 			shoppingCart = (ShoppingCart) session.getAttribute("SHOPPING_CART");
