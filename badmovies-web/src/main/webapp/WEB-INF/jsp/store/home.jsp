@@ -7,85 +7,168 @@
 
 <script>
 
-
+	var colsPerRow = 6;
 	var initPage = function(){
-		initShoppingCartIcons();
-		initMovieInfoDialogs();
+		initMovieContainers();
+		initDetailsModal();
 	}
 	
-	function initMovieInfoDialogs(){
-		$(".moviebox-poster").each(function(index,value){
-			var movieId = $(value).attr('data-movieid');
-			$(value).click(function(){
-				$.ajax({
-					url:"/storefront/moviedetails",
-					data: {'movieid':movieId},
-					success: function(data){
-						var $moviedetailsmodal = $('#moviedetails-modal');
-						$moviedetailsmodal.html(data);
-						$('#moviedetails-modal').modal('show');
-						
-					},
-					dataType:'html'
-				})
-			})
-		});
+	function initDetailsModal(){
+		//when modal is shown, bind the shoppingcart icon to a click handler.
+		$('#moviedetails-modal').on('shown.bs.modal', function() {
+	    	var movieId = $('#moviedetails-modal div.modal-content').attr('data-movieid');
+	    	$('#moviedetails-modal span.moviebox-shoppingcart').on('click',function(){
+	    		toggleShoppingCart(movieId);
+	    	})
+	    });
+		
+		//when modal is hidden, remove the click handler binding. 
+		//(not required, but a good practice to clean up after yourself)
+		$('#moviedetails-modal').on('hidden.bs.modal', function() {
+	    	$('#moviedetails-modal span.moviebox-shoppingcart').off('click');
+	    });		
 	}
 	
 	
-	function initShoppingCartIcons(){
-		$(".addtocart").each(function(index,value){
-			console.debug("initShoppingCartIcons: found "+$(value));
-			$(value).click(function(){
-				console.debug(value," was clicked: "+$(value).attr('data-movieid'));
-				var movieId = $(value).attr('data-movieid');
-				addMovieToShoppingCart(movieId);
-			})
-		});
-	}
-	
-	function addMovieToShoppingCart(movieId){
+	//call the movielist service, iterate through the list of returned movies
+	//creating and populating a movie div for each instance.	
+	function initMovieContainers(){
+		console.log('---------initMovieContainers--------');
+		var moviesection = $('#moviesection')[0];
 		$.ajax({
-			  url: "/storefront/rest/updateshoppingcart",
-			  data: {'movieid':movieId},
-			  success: function(data){
-				  console.debug("success!  ",data)
-				  $("#shoppingcart-itemcount").text(data.itemCount);
-			  },
-			  dataType: 'json'
-			});
+			url:'/storefront/rest/movielist',
+			success: function(data){
+				
+				$.each(data,function(i,movie){
+					console.debug('movie = ',movie.id);
+					var addStartRowDiv = i%colsPerRow==0?true:false;
+					
+					if(addStartRowDiv){
+						$(moviesection).append('<div class="row"></div>');
+					}
+					
+					var $rowDiv = $(moviesection).find('.row').last();
+					
+					var $movieBoxDiv = $('<div class="moviebox-container col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2"><div>');
+					$movieBoxDiv.attr('data-movieid',movie.movieId);
+					
+					//add the poster
+					var $movieBoxPoster = $('<img class="moviebox-poster" alt=""></img>');
+					$movieBoxPoster.attr('src',movie.poster);
+					$movieBoxPoster.click(function(){
+						$.ajax({
+							url:"/storefront/moviedetails",
+							data: {'movieid':movie.movieId},
+							success: function(data){
+								var $moviedetailsmodal = $('#moviedetails-modal');
+								$moviedetailsmodal.html(data);
+								$('#moviedetails-modal').modal('show');
+								
+							},
+							dataType:'html'
+						})
+					});
+					$movieBoxDiv.append($movieBoxPoster);
+					
+					//add the title
+					var $movieBoxTitle = $('<span class="moviebox-title">'+movie.title+'</span>');
+					$movieBoxDiv.append($movieBoxTitle);
+					
+					
+					//add the price
+					$movieBoxDiv.append('<span class="moviebox-price">'+movie.formattedPrice+'</span>');
+					
+					//add the shoppingcart span
+					var $movieBoxCartSpan = $('<span class="moviebox-shoppingcart"></span>');
+					if(movie.inCart){
+						$movieBoxCartSpan.addClass('text-success');
+					}
+					$movieBoxCartSpan.click(function(){
+						toggleShoppingCart(movie.movieId);
+					});
+					var $movieBoxCartIcon = $('<i class="fas fa-shopping-cart fa-xs"></i>');
+					$movieBoxCartSpan.append($movieBoxCartIcon);
+					$movieBoxDiv.append($movieBoxCartSpan);
+	
+					
+					$rowDiv.append($movieBoxDiv);
+				
+				});
+			},
+			dataType:'json'
+		});
+		
+
 	}
+	
+
+	
+	/*
+	   a generic function to 'toggle' a movie into and out of the shopping cart.
+	   The state of the movie/shopping-cart relationship is determined by checking if the movie has a particular css class.
+	*/
+	function toggleShoppingCart(movieId){
+		var inCart = $(".moviebox-container[data-movieid="+movieId+"] span.moviebox-shoppingcart").hasClass('text-success');
+		if(inCart){
+			removeMovieFromShoppingCart(movieId);
+		}else{
+			addMovieToShoppingCart(movieId);
+		}
+	}
+	
+	
+	/*
+	  adds a movie to the shopping cart on the server side, 
+	  then updates the css to reflect that the movie is in the shopping cart.
+	*/
+	function addMovieToShoppingCart(movieId){
+		updateShoppingChart('add',movieId);
+		//change the shoppingcart icon
+		$(".moviebox-container[data-movieid="+movieId+"] span.moviebox-shoppingcart").addClass('text-success');
+		//update the icon on the details modal
+		$("#moviedetails-modal span.moviebox-shoppingcart").addClass('text-success');
+	}
+	
+	/*
+	  removes a movie from the shopping cart on the server side, 
+	  then updates the css to reflect that the movie is NOT in the shopping cart.
+	*/
+	function removeMovieFromShoppingCart(movieId){
+		updateShoppingChart('remove',movieId);	
+		$(".moviebox-container[data-movieid="+movieId+"] span.moviebox-shoppingcart").removeClass('text-success');
+		//update the icon on the details modal
+		$("#moviedetails-modal span.moviebox-shoppingcart").removeClass('text-success');
+	}	
+	
+
+	/*
+		makes an ajax call to update the shopping cart.
+		valid 'action' parameters are:
+			add
+			remove
+	*/
+	function updateShoppingChart(action,movieId){
+		$.ajax({
+		  url: "/storefront/rest/updateshoppingcart",
+		  data: {'action':action,'movieid':movieId},
+		  success: function(data){
+			  $("#shoppingcart-itemcount").text(data.itemCount);
+		  },
+		  dataType: 'json'
+		});	
+	}
+	
+	
+
+	
 	
 	
 
 </script>
 
-
-
-	<c:forEach items="${storefrontresponse.movies}" var="movie" varStatus="status">
-      <fmt:parseNumber value="${movie.price}" var="mp"/>
-      <c:if test="${status.index%6 eq 0}">
-         <div class="row">
-      </c:if>
-      <div class="moviebox-container col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4" data-movieid=${movie.id}>
-       <img class="moviebox-poster" alt="" src="${movie.poster}" data-movieid=${movie.id}></img>
-       <span class="moviebox-title"><c:out value="${movie.title}"/></span>
-       <span class="moviebox-price"><fmt:formatNumber type="currency" value="${mp}"></fmt:formatNumber>  </span>
-       <span class="addtocart" data-movieid=${movie.id}>
-       <i class="fas fa-plus" title="Add To Cart" data-movieid="${movie.id}"></i>
-       </span>
-      </div>
-      <c:if test="${status.index % 6 eq 5}">
-        </div>
-      </c:if>
- 	</c:forEach>
-
-  
-  
+  <div id="moviesection" class="container"></div>
   
   <%--modal box for movie details --%>
-  <div class="modal fade" id="moviedetails-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-
-  </div>
+  <div class="modal fade" id="moviedetails-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
   
   
