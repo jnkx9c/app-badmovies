@@ -1,18 +1,22 @@
 package org.kilgore.badmovies.request;
 
-import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.kilgore.badmovies.domain.ShoppingCart;
 import org.kilgore.badmovies.response.StorefrontBaseResponse;
+import org.kilgore.badmovies.service.StoreFrontService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class StorefrontBaseRequest<R extends StorefrontBaseResponse> {
 
 	protected R response = null;
+
+	
 	@Autowired
-	protected HttpSession httpSession;
+	protected StoreFrontService storeFrontService;
 	
 	protected ShoppingCart shoppingCart;
+	protected Map<String, String> parameters = null;
 	
 
 	private void preprocess() {
@@ -34,25 +38,17 @@ public abstract class StorefrontBaseRequest<R extends StorefrontBaseResponse> {
 		return response;
 	}
 	
-	public HttpSession getHttpSession() {
-		return httpSession;
-	}
-	public void setHttpSession(HttpSession httpSession) {
-		this.httpSession = httpSession;
-	}
+
 	
 	protected ShoppingCart getShoppingCart() {
-		ShoppingCart shoppingCart = null;
-		if(httpSession!=null) {
-			shoppingCart = (ShoppingCart) httpSession.getAttribute("SHOPPING_CART");
-			if(shoppingCart==null) {
-				shoppingCart = new ShoppingCart();
-				httpSession.setAttribute("SHOPPING_CART", shoppingCart);
-			}
-		}
-		
-		
-		return shoppingCart;
+		return storeFrontService.getShoppingCart();
+	}
+	
+	public Map<String, String> getParameters() {
+		return parameters;
+	}
+	public void setParameters(Map<String, String> parameters) {
+		this.parameters = parameters;
 	}
 	
 }

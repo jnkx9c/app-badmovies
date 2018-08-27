@@ -6,7 +6,7 @@
 
 
 <script>
-
+	var currentpage = ${page};
 	var colsPerRow = 6;
 	var initPage = function(){
 		initMovieContainers();
@@ -37,9 +37,10 @@
 		var moviesection = $('#moviesection')[0];
 		$.ajax({
 			url:'/storefront/rest/movielist',
-			success: function(data){
-				
-				$.each(data,function(i,movie){
+			data:{'page':currentpage},
+			success: function(movielistdto){
+				console.debug(movielistdto);
+				$.each(movielistdto.movies,function(i,movie){
 					console.debug('movie = ',movie.id);
 					var addStartRowDiv = i%colsPerRow==0?true:false;
 					
@@ -94,6 +95,10 @@
 					$rowDiv.append($movieBoxDiv);
 				
 				});
+				
+
+				initPaginator(movielistdto);
+				
 			},
 			dataType:'json'
 		});
@@ -101,6 +106,28 @@
 
 	}
 	
+	
+	function initPaginator(movielistdto){
+		//set up the paginator
+		var $paginatorUL = $("ul.pagination");
+		var $pageLI = $('<li class="page-item"><a class="page-link" href="#">Previous</a></li>');
+		if(currentpage==0){
+			$pageLI.addClass('disabled');
+		}else{
+			$pageLI.find('a').attr('href','/storefront/home?page='+(currentpage-1));
+		}
+		$paginatorUL.append($pageLI);
+
+		for(i=0; i<movielistdto.totalPages; i++){
+			$pageLI = $('<li class="page-item"><a class="page-link" href="/storefront/home?page='+i+'">'+(i+1)+'</a></li>');
+			if(currentpage == i){
+				$pageLI.addClass('active');
+			}
+			$paginatorUL.append($pageLI);
+		}		
+		$paginatorUL.append('<li class="page-item"><a class="page-link" href="/storefront/home?page='+(movielistdto.totalPages-1)+'">Last</a></li>');
+
+	}
 
 	
 	/*
@@ -165,9 +192,13 @@
 	
 
 </script>
-
+  <nav>
+    <ul class="pagination"></ul>
+  </nav>
   <div id="moviesection" class="container"></div>
-  
+  <nav>
+    <ul class="pagination"></ul>
+  </nav>
   <%--modal box for movie details --%>
   <div class="modal fade" id="moviedetails-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
   

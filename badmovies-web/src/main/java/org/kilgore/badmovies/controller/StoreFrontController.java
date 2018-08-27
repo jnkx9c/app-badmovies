@@ -1,18 +1,23 @@
 package org.kilgore.badmovies.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.kilgore.badmovies.domain.ShoppingCart;
 import org.kilgore.badmovies.dto.DTO_EntityConversionUtils;
 import org.kilgore.badmovies.dto.MovieDTO;
+import org.kilgore.badmovies.dto.MovieListDTO;
+import org.kilgore.badmovies.dto.SearchMoviesListDTO;
 import org.kilgore.badmovies.entity.Movie;
 import org.kilgore.badmovies.request.RequestFinderService;
 import org.kilgore.badmovies.request.StorefrontBaseRequest;
 import org.kilgore.badmovies.response.StorefrontBaseResponse;
 import org.kilgore.badmovies.service.StoreFrontService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,23 +41,22 @@ public class StoreFrontController {
 	private RequestFinderService requestFinderService;
 	
 	
-	
 	@RequestMapping({"/",""})
-	public RedirectView splashpage(Model model) {
-
-		return new RedirectView("/storefront/home");
+	public RedirectView redirectToProducts() {
+		return new RedirectView("/storefront/products");
 	}
-	
-	@RequestMapping({"/home"})
-	public ModelAndView homepage(Model model,HttpSession session) {
 
-		handleRequest("home",model,session);
+	
+	@RequestMapping({"/products"})
+	public ModelAndView productlistingPage(@RequestParam(name="page", defaultValue="0") Integer page,Model model) {
+		handleRequest("products",model);
+		model.addAttribute("page",page);
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
 	@RequestMapping("/shoppingcart")
-	public ModelAndView shoppingCartPage(Model model, HttpSession session) {
-		handleRequest("shoppingcartpage",model,session);
+	public ModelAndView shoppingCartPage(Model model) {
+		handleRequest("shoppingcartpage",model);
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -68,23 +72,41 @@ public class StoreFrontController {
 		return new ModelAndView("store/moviedetails-modal");
 	}
 	
-	private void handleRequest(String requestName, Model model, HttpSession session) {
+	private void handleRequest(String requestName, Model model) {
+		handleRequest(requestName, null,model);
+	}
+	
+	private void handleRequest(String requestName, Map<String, String> parameters, Model model) {
 		StorefrontBaseRequest<?> request = requestFinderService.findRequestByName(requestName);
+		request.setParameters(parameters);
 		StorefrontBaseResponse response = request.execute();
 		model.addAttribute("storefrontresponse",response);
 	}
 
 	
 	
-	
+	@RequestMapping("/rest/searchmovies")
+	@ResponseBody
+	public SearchMoviesListDTO searchmovies(@RequestParam(name="q") String search) {
+		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(storeFrontService.searchMovies(search));
+		SearchMoviesListDTO searchMovieListDTO = new SearchMoviesListDTO();
+		searchMovieListDTO.setMovies(movieDTOs);
+		return searchMovieListDTO;
+	}
 	
 	@RequestMapping("/rest/movielist")
 	@ResponseBody
-	public List<MovieDTO> movielist(
+	public MovieListDTO movielist(
 			@RequestParam(name="pagesize", defaultValue="10") Integer pagesize,
-			@RequestParam(name="page", defaultValue="0") Integer page){
+			@RequestParam(name="page", defaultValue="0") Integer pageToFetch){
 		
-		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(storeFrontService.listMovies());
+		Page<Movie> page = null;
+
+		page = storeFrontService.listMovies(pageToFetch);
+		
+		
+		
+		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(page.getContent());
 		//mark the movies that are already in the shopping cart
 		ShoppingCart shoppingCart = getShoppingCart();
 		if(shoppingCart!=null && shoppingCart.getMovieIds()!=null) {
@@ -93,7 +115,13 @@ public class StoreFrontController {
 		
 			}
 		}
-		return movieDTOs;
+		MovieListDTO movieListDTO = new MovieListDTO();
+		movieListDTO.setMovies(movieDTOs);
+		movieListDTO.setTotalMovies(page.getTotalElements());
+		movieListDTO.setPage(page.getNumber());
+		movieListDTO.setTotalPages(page.getTotalPages());
+	
+		return movieListDTO;
 	}
 	
 	@RequestMapping({"/rest/shoppingcart"})

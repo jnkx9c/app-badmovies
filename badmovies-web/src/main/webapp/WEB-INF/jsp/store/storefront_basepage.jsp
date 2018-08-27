@@ -51,22 +51,21 @@
         <a class="nav-link" href="#">Pricing</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
+        <a class="nav-link" href="/logout">Logout</a>
       </li>
     </ul>
-    <%--
-    <ul class="navbar-nav">
-        <li><a href="shoppingcart" id="cart">
-            <i class="fa fa-shopping-cart"></i> Cart 
-            <span id="shoppingcart-itemcount" class="badge badge-secondary">
-            <c:out value="${storefrontresponse.shoppingCart.itemCount}"/>
-            </span>
-           </a>
-        </li>
-    </ul>
-     --%>
+
+
+    <form class="form-inline my-2 my-lg-0">
+      <input id="searchbar" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+    </form> 
+      
     
   </div>
+  
+  
+  
+  
 </nav>
     <div class="movie-maincontent">
       <jsp:include page="${storefrontresponse.view}.jsp"></jsp:include> 
@@ -80,10 +79,29 @@
 
 <script>
   $(document).ready(function(){
+	  initBasePage();
 	  if (typeof initPage == 'function') { 
 		  initPage(); 
 		} 
   });
+  
+  function initBasePage(){
+	  $('#searchbar').on('keyup',function(){
+		  if(this.value.length>=3){
+			  console.log(this.value);
+			  $.ajax({
+				  url: "/storefront/rest/searchmovies",
+				  data:{'q':this.value},
+				  success:function(results){
+					  console.debug(results);
+				  }
+			  });
+			  
+		  }
+	  })
+  }
+  
+  
   </script>
 
 

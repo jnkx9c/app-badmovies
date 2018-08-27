@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.kilgore.badmovies.entity.Movie;
 
-public class HomePageResponse extends StorefrontBaseResponse{
+public class ProductListingResponse extends StorefrontBaseResponse{
 
 	private List<Movie> movies;
 	
@@ -21,7 +21,7 @@ public class HomePageResponse extends StorefrontBaseResponse{
 
 	@Override
 	public String getView() {
-		return "home";
+		return "product-listing";
 	}
 
 }
