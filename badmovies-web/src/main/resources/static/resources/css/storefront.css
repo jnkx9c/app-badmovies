@@ -9,6 +9,11 @@
 
 }
 
+.navbar-brand img{
+	height: 50px;
+    width: 50px;
+}  
+
 div.movie-maincontainer {
 	box-shadow: 0px 0px 8px rgba(0,0,0,0.7);
 

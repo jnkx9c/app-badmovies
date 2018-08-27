@@ -114,18 +114,18 @@
 		if(currentpage==0){
 			$pageLI.addClass('disabled');
 		}else{
-			$pageLI.find('a').attr('href','/storefront/home?page='+(currentpage-1));
+			$pageLI.find('a').attr('href','/storefront/products?page='+(currentpage-1));
 		}
 		$paginatorUL.append($pageLI);
 
 		for(i=0; i<movielistdto.totalPages; i++){
-			$pageLI = $('<li class="page-item"><a class="page-link" href="/storefront/home?page='+i+'">'+(i+1)+'</a></li>');
+			$pageLI = $('<li class="page-item"><a class="page-link" href="/storefront/products?page='+i+'">'+(i+1)+'</a></li>');
 			if(currentpage == i){
 				$pageLI.addClass('active');
 			}
 			$paginatorUL.append($pageLI);
 		}		
-		$paginatorUL.append('<li class="page-item"><a class="page-link" href="/storefront/home?page='+(movielistdto.totalPages-1)+'">Last</a></li>');
+		$paginatorUL.append('<li class="page-item"><a class="page-link" href="/storefront/products?page='+(movielistdto.totalPages-1)+'">Last</a></li>');
 
 	}
 

@@ -18,6 +18,7 @@
     
 
     <span>Your cat likes movies too.</span>
-    <button id="but-register" type="button" class="btn btn-primary btn-lg">Register</button>
+   
+    <a href="/registrationpage" id="but-register" class="btn btn-primary btn-lg">Register</a>
   
  

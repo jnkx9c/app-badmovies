@@ -29,7 +29,7 @@
      </div>
     <c:if test="${param.error != null}">
         <div id="error" class="alert alert-danger" role="alert">
-            Bad Credentials
+           The email address or password is incorrect. Try again.
         </div>
     </c:if>
     <button type="submit" class="btn btn-primary" name="submit">Submit</button>

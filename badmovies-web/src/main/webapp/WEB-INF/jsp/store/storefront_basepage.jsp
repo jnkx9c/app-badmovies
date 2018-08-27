@@ -28,7 +28,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <%--<a class="navbar-brand" href="#">Navbar</a> --%>
   <div class="navbar-brand">
-    BAD MOVIES
+    <img src="/resources/images/logo_cat-only.png">
   <a href="shoppingcart" id="cart">
     <i class="fa fa-shopping-cart"></i> Cart 
       <span id="shoppingcart-itemcount" class="badge badge-secondary">
