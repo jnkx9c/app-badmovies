@@ -18,8 +18,7 @@
 
 
 
-<link rel="stylesheet" href="/resources/css/storefront.css"/>
-
+<link rel="stylesheet" href="<c:url value="/resources/css/storefront.css"/>"/>
 
 </head>
 <body>
@@ -28,11 +27,11 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <%--<a class="navbar-brand" href="#">Navbar</a> --%>
   <div class="navbar-brand">
-    <img src="/resources/images/logo_cat-only.png">
+    <img src="<c:url value='/resources/images/logo_cat-only.png'/>"/>
   <a href="shoppingcart" id="cart">
     <i class="fa fa-shopping-cart"></i> Cart 
-      <span id="shoppingcart-itemcount" class="badge badge-secondary">
-      <c:out value="${storefrontresponse.shoppingCart.itemCount}"/>
+      <span id="shoppingcart-itemcount" class="badge badge-secondary sc-itemcount">
+        <c:out value="${storefrontresponse.shoppingCart.itemCount}"/>
       </span>
   </a>  
   </div>
@@ -42,7 +41,7 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav  mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="/storefront/home">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="<c:url value='/storefront/products'/>">Movies <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">Features</a>
@@ -51,7 +50,7 @@
         <a class="nav-link" href="#">Pricing</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/logout">Logout</a>
+        <a class="nav-link" href="<c:url value='/logout'/>">Logout</a>
       </li>
     </ul>
 
@@ -90,7 +89,7 @@
 		  if(this.value.length>=3){
 			  console.log(this.value);
 			  $.ajax({
-				  url: "/storefront/rest/searchmovies",
+				  url: "<c:url value='/storefront/rest/searchmovies'/>",
 				  data:{'q':this.value},
 				  success:function(results){
 					  console.debug(results);

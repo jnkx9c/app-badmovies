@@ -12,7 +12,8 @@
     <meta name="viewport" content="width=device-width, user-scalable=no" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   
-    <link rel="stylesheet" href="/resources/css/splash.css">
+    <link rel="stylesheet" href="<c:url value="/resources/css/splash.css"/>">
+    
     <style>
 
     <%--#but-register {
@@ -24,14 +25,6 @@
       margin: -100px 0 0 -150px;
     } --%>
     
-   #but-register {
-      position: absolute;
-      width: 150px;
-      height: 50px;
-      top: 50%;
-      left: 50%;
-      margin: -25px 0 0 -75px;
-    }  
       
     .navbar-brand img{
       height: 50px;
@@ -47,7 +40,7 @@
     <div class="container">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">
-          <img src="/resources/images/logo_cat-only.png">
+          <img src="<c:url value="/resources/images/logo_cat-only.png"/>">
         </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -57,13 +50,13 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item ${targetpage=='home.jsp'?'active':''}">
-            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="<c:url value='/'/>">Home <span class="sr-only">(current)</span></a>
           </li>        
           <li class="nav-item ${targetpage=='login.jsp'?'active':''}">
-            <a class="nav-link" href="/loginpage">Login</a>
+            <a class="nav-link" href="<c:url value='/loginpage'/>">Login</a>
           </li>
           <li class="nav-item ${targetpage=='registration.jsp'?'active':''}">
-            <a class="nav-link" href="/registrationpage">Register</a>
+            <a class="nav-link" href="<c:url value='/registrationpage'/>">Register</a>
           </li>
         </ul>
       </div>

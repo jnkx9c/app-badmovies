@@ -1,6 +1,7 @@
 package org.kilgore.badmovies.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,7 +68,7 @@ public class StoreFrontService {
 	}
 
 
-	public List<Movie> findMoviesById(List<Integer> movieIds) {
+	public List<Movie> findMoviesById(Collection<Integer> movieIds) {
 		List<Movie> movieList = new ArrayList<>();
 		Iterable<Movie> movieIterable = movieRepository.findByIdIn(movieIds);
 		if(movieIterable!=null) {
@@ -77,7 +78,7 @@ public class StoreFrontService {
 	}
 
 
-	public Movie findMoviesById(Integer movieId) {
+	public Movie findMovieById(Integer movieId) {
 		Optional<Movie> optional= movieRepository.findById(movieId);
 		Movie movie = null;
 		if(optional.isPresent()) {

@@ -1,6 +1,5 @@
 package org.kilgore.badmovies.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,10 +29,6 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/storefront")
 public class StoreFrontController {
 
-	
-	@Autowired
-	private HttpSession httpSession;
-	
 	@Autowired
 	private StoreFrontService storeFrontService;
 	
@@ -43,7 +38,7 @@ public class StoreFrontController {
 	
 	@RequestMapping({"/",""})
 	public RedirectView redirectToProducts() {
-		return new RedirectView("/storefront/products");
+		return new RedirectView("/storefront/products",true);
 	}
 
 	
@@ -62,14 +57,21 @@ public class StoreFrontController {
 	
 	@RequestMapping("/moviedetails")
 	public ModelAndView movieDetails(@RequestParam("movieid") Integer movieId,Model model) {
-		Movie movie = storeFrontService.findMoviesById(movieId);
+		Movie movie = storeFrontService.findMovieById(movieId);
 		MovieDTO movieDTO = DTO_EntityConversionUtils.convertMovieEntityToDTO(movie);
 		ShoppingCart shoppingCart = getShoppingCart();
-		if(shoppingCart!=null && shoppingCart.getMovieIds()!=null) {
-			movieDTO.setInCart(shoppingCart.getMovieIds().contains(movieId));
+		if(shoppingCart!=null) {
+			movieDTO.setInCart(shoppingCart.containsItem(movieId));
 		}
 		model.addAttribute("movie", movieDTO);
 		return new ModelAndView("store/moviedetails-modal");
+	}
+	
+	
+	@RequestMapping("/processorder")
+	public ModelAndView processorder(Model model) {
+		handleRequest("processorder", model);
+		return new ModelAndView("store/storefront_basepage");
 	}
 	
 	private void handleRequest(String requestName, Model model) {
@@ -109,9 +111,9 @@ public class StoreFrontController {
 		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(page.getContent());
 		//mark the movies that are already in the shopping cart
 		ShoppingCart shoppingCart = getShoppingCart();
-		if(shoppingCart!=null && shoppingCart.getMovieIds()!=null) {
+		if(shoppingCart!=null) {
 			for(MovieDTO movie: movieDTOs) {
-				movie.setInCart(shoppingCart.getMovieIds().contains(movie.getMovieId()));
+				movie.setInCart(shoppingCart.containsItem(movie.getMovieId()));
 		
 			}
 		}
@@ -141,40 +143,43 @@ public class StoreFrontController {
 		if(action!=null && movieid!=null) {
 			switch (action) {
 			case "add":
-				if(!shoppingCart.getMovieIds().contains(movieid)) {
-					shoppingCart.getMovieIds().add(movieid);
-
-				}				
+				Movie movie = storeFrontService.findMovieById(movieid);
+				shoppingCart.addItem(movie);
 				break;
 			case "remove":
-				if(shoppingCart.getMovieIds().contains(movieid)) {
-					shoppingCart.getMovieIds().remove(movieid);
+				if(shoppingCart.containsItem(movieid)) {
+					shoppingCart.removeItem(movieid);
 				}				
 				break;
 			default:
 				break;
 			}
 		}
+		
 		return shoppingCart;
 	}
 	
 	
+	@RequestMapping("/rest/updatecartquantity")
+	@ResponseBody
+	public ShoppingCart updateCartQuantity(
+			@RequestParam(name="movieid", required=true) Integer movieid,
+			@RequestParam(name="quantity",required=true) Integer quantity) 
+	{
+		ShoppingCart shoppingCart = getShoppingCart();
+		shoppingCart.updateQuantity(movieid, quantity);
+		
+		
+		return shoppingCart;
+		
+	}
+	
+
+	
 	private ShoppingCart getShoppingCart() {
 		return storeFrontService.getShoppingCart();
 	}
-//	public static ShoppingCart getShoppingCart(HttpSession session) {
-//		ShoppingCart shoppingCart = null;
-//		if(session!=null) {
-//			shoppingCart = (ShoppingCart) session.getAttribute("SHOPPING_CART");
-//			if(shoppingCart==null) {
-//				shoppingCart = new ShoppingCart();
-//				session.setAttribute("SHOPPING_CART", shoppingCart);
-//			}
-//		}
-//		
-//		
-//		return shoppingCart;
-//	}
+
 	
 	
 }

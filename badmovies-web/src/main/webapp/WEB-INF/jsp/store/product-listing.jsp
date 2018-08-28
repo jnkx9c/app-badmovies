@@ -36,7 +36,7 @@
 		console.log('---------initMovieContainers--------');
 		var moviesection = $('#moviesection')[0];
 		$.ajax({
-			url:'/storefront/rest/movielist',
+			url:'<c:url value="/storefront/rest/movielist"/>',
 			data:{'page':currentpage},
 			success: function(movielistdto){
 				console.debug(movielistdto);
@@ -58,7 +58,7 @@
 					$movieBoxPoster.attr('src',movie.poster);
 					$movieBoxPoster.click(function(){
 						$.ajax({
-							url:"/storefront/moviedetails",
+							url:"<c:url value="/storefront/moviedetails"/>",
 							data: {'movieid':movie.movieId},
 							success: function(data){
 								var $moviedetailsmodal = $('#moviedetails-modal');
@@ -109,23 +109,24 @@
 	
 	function initPaginator(movielistdto){
 		//set up the paginator
+		var productsURL = '<c:url value="/storefront/products"/>';
 		var $paginatorUL = $("ul.pagination");
 		var $pageLI = $('<li class="page-item"><a class="page-link" href="#">Previous</a></li>');
 		if(currentpage==0){
 			$pageLI.addClass('disabled');
 		}else{
-			$pageLI.find('a').attr('href','/storefront/products?page='+(currentpage-1));
+			$pageLI.find('a').attr('href','<c:url value="/storefront/products"/>?page='+(currentpage-1));
 		}
 		$paginatorUL.append($pageLI);
 
 		for(i=0; i<movielistdto.totalPages; i++){
-			$pageLI = $('<li class="page-item"><a class="page-link" href="/storefront/products?page='+i+'">'+(i+1)+'</a></li>');
+			$pageLI = $('<li class="page-item"><a class="page-link" href="'+productsURL+'?page='+i+'">'+(i+1)+'</a></li>');
 			if(currentpage == i){
 				$pageLI.addClass('active');
 			}
 			$paginatorUL.append($pageLI);
 		}		
-		$paginatorUL.append('<li class="page-item"><a class="page-link" href="/storefront/products?page='+(movielistdto.totalPages-1)+'">Last</a></li>');
+		$paginatorUL.append('<li class="page-item"><a class="page-link" href="'+productsURL+'?page='+(movielistdto.totalPages-1)+'">Last</a></li>');
 
 	}
 
@@ -176,7 +177,7 @@
 	*/
 	function updateShoppingChart(action,movieId){
 		$.ajax({
-		  url: "/storefront/rest/updateshoppingcart",
+		  url: "<c:url value='/storefront/rest/updateshoppingcart'/>",
 		  data: {'action':action,'movieid':movieId},
 		  success: function(data){
 			  $("#shoppingcart-itemcount").text(data.itemCount);

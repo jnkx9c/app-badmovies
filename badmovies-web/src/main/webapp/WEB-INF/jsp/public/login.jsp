@@ -12,12 +12,12 @@
     <c:if test="${param.registrationsuccess eq 'true'}">
         <div  class="alert alert-success" role="alert">
             Thanks for registering, <c:out value="${firstname}"/>.  You have successfully completed the Registration process.<br/>
-            Now, log into our site!
+            Now, login to our site!
         </div>
     </c:if>
 
   <div class="formdata">    
-    <form action="login" method="post">
+    <form action="<c:url value='login'/>" method="post">
       <div class="form-group">
         <label for="exampleInputEmail1">Email Address</label>
         <input type="email" class="form-control" id="exampleInputEmail1" name="username" aria-describedby="emailHelp" placeholder="Enter email">
