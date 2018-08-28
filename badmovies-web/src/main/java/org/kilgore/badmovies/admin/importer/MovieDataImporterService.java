@@ -98,6 +98,7 @@ public class MovieDataImporterService {
 			try {
 				MovieJsonDTO jsonMovie = mapper.readValue(new URL("http://www.omdbapi.com/?apikey="+apikey+"&i="+imdbId+"&plot=full"), MovieJsonDTO.class);
 				Movie convertedMovie = JsonToEntityConverter.convertJsonDTOToMovie(jsonMovie);
+				convertedMovie.setPrice(1.99f);
 				retVal = movieRepository.save(convertedMovie);
 			} catch (JsonParseException e) {
 				// TODO Auto-generated catch block

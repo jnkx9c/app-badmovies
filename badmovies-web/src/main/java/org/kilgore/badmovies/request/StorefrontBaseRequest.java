@@ -2,10 +2,14 @@ package org.kilgore.badmovies.request;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.kilgore.badmovies.domain.ShoppingCart;
+import org.kilgore.badmovies.entity.User;
 import org.kilgore.badmovies.response.StorefrontBaseResponse;
 import org.kilgore.badmovies.service.StoreFrontService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 
 public abstract class StorefrontBaseRequest<R extends StorefrontBaseResponse> {
 
@@ -15,9 +19,10 @@ public abstract class StorefrontBaseRequest<R extends StorefrontBaseResponse> {
 	@Autowired
 	protected StoreFrontService storeFrontService;
 	
+	
 	protected ShoppingCart shoppingCart;
 	protected Map<String, String> parameters = null;
-	
+	protected User user;
 
 	private void preprocess() {
 		shoppingCart = getShoppingCart();
@@ -44,11 +49,18 @@ public abstract class StorefrontBaseRequest<R extends StorefrontBaseResponse> {
 		return storeFrontService.getShoppingCart();
 	}
 	
+
 	public Map<String, String> getParameters() {
 		return parameters;
 	}
 	public void setParameters(Map<String, String> parameters) {
 		this.parameters = parameters;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
 	}
 	
 }

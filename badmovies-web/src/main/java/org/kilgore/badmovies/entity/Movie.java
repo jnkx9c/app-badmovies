@@ -2,6 +2,7 @@ package org.kilgore.badmovies.entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -35,7 +36,7 @@ public class Movie extends BaseEntityObject{
 	private String poster;
 	private String production;
 	private String rated;
-	@OneToMany
+	@OneToMany(mappedBy="movie", cascade = CascadeType.ALL)
 	private List<Rating> ratings;
 	private String released;
 	private String response;

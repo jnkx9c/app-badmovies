@@ -2,14 +2,20 @@ package org.kilgore.badmovies.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
 import org.kilgore.badmovies.domain.ShoppingCart;
+import org.kilgore.badmovies.domain.ShoppingCartItem;
 import org.kilgore.badmovies.entity.Movie;
+import org.kilgore.badmovies.entity.Order;
+import org.kilgore.badmovies.entity.OrderItem;
+import org.kilgore.badmovies.entity.User;
 import org.kilgore.badmovies.repo.MovieRepo;
+import org.kilgore.badmovies.repo.OrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +27,9 @@ public class StoreFrontService {
 
 	@Autowired
 	private MovieRepo movieRepository;
+	
+	@Autowired
+	private OrderRepo orderRepository;
 	
 	@Autowired
 	private HttpSession session;
@@ -85,6 +94,41 @@ public class StoreFrontService {
 			movie=optional.get();
 		}
 		return movie;
+	}
+
+
+	public Order createOrder(User user, ShoppingCart shoppingCart) {
+		Order persistedOrder = null;
+		int totalOrderQuantity=0;
+		float totalOrderPrice = 0;
+		if(user!=null && shoppingCart!=null) {
+
+			Collection<ShoppingCartItem> shoppingCartItems = shoppingCart.getItemIdMap().values();
+			if(shoppingCartItems!=null && !shoppingCartItems.isEmpty()) {
+				Order order = new Order();
+				order.setUser(user);
+				order.setOrderDate(new Date());
+				for(ShoppingCartItem shoppingCartItem: shoppingCartItems) {
+					OrderItem orderItem = new OrderItem();
+					Movie movie = findMovieById(shoppingCartItem.getItemId());
+					orderItem.setMovie(movie);
+					orderItem.setQuantity(shoppingCartItem.getQuantity());
+					orderItem.setPrice(shoppingCartItem.getPrice());
+					totalOrderQuantity += shoppingCartItem.getQuantity();
+					totalOrderPrice += (shoppingCartItem.getPrice()*shoppingCartItem.getQuantity());
+					order.addOrderItem(orderItem);
+					
+				}
+				order.setTotalOrderPrice(totalOrderPrice);
+				order.setTotalOrderQuantity(totalOrderQuantity);
+				persistedOrder = orderRepository.save(order);
+			}
+			
+
+		}
+
+		
+		return persistedOrder;
 	}
 	
 	

@@ -40,11 +40,11 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav  mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="<c:url value='/storefront/products'/>">Movies <span class="sr-only">(current)</span></a>
+      <li class="nav-item ${storefrontresponse.view eq 'product-listing'?'active':'' }">
+        <a class="nav-link" href="<c:url value='/storefront/products'/>">Movies</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Features</a>
+      <li class="nav-item ${storefrontresponse.view eq 'orderhistory'?'active':'' }">
+        <a class="nav-link" href="<c:url value='/storefront/orderhistory'/>">Order History</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">Pricing</a>
