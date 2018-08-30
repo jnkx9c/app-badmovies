@@ -16,16 +16,7 @@
     
     <style>
 
-    <%--#but-register {
-      position: absolute;
-      width: 300px;
-      height: 200px;
-      top: 50%;
-      left: 50%;
-      margin: -100px 0 0 -150px;
-    } --%>
-    
-      
+     
     .navbar-brand img{
       height: 50px;
       width: 50px;
