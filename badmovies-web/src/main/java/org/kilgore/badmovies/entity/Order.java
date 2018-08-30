@@ -50,6 +50,7 @@ public class Order extends BaseEntityObject{
 				orderItems = new ArrayList<>();
 			}
 			orderItems.add(orderItem);
+			orderItem.setOrder(this);
 		
 		}
 	}

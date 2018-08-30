@@ -1,6 +1,7 @@
 package org.kilgore.badmovies.controller;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.kilgore.badmovies.request.RequestFinderService;
 import org.kilgore.badmovies.request.StorefrontBaseRequest;
 import org.kilgore.badmovies.response.StorefrontBaseResponse;
 import org.kilgore.badmovies.service.StoreFrontService;
+import org.kilgore.badmovies.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
@@ -48,19 +50,24 @@ public class StoreFrontController {
 	
 	@RequestMapping({"/products"})
 	public ModelAndView productlistingPage(@RequestParam(name="page", defaultValue="0") Integer page,Model model) {
-		handleRequest("products",model);
+		handleRequest(AppConstants.RB_PRODUCTS,model);
 		model.addAttribute("page",page);
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
+	
+	
 	@RequestMapping("/shoppingcart")
 	public ModelAndView shoppingCartPage(Model model) {
-		handleRequest("shoppingcartpage",model);
+		handleRequest(AppConstants.RB_SHOPPINGCART_PAGE,model);
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
+	
+	
+	
 	@RequestMapping("/moviedetails")
-	public ModelAndView movieDetails(@RequestParam("movieid") Integer movieId,Model model) {
+	public ModelAndView movieDetails(@RequestParam(AppConstants.PARAM_MOVIE_ID) Integer movieId,Model model) {
 		Movie movie = storeFrontService.findMovieById(movieId);
 		MovieDTO movieDTO = DTO_EntityConversionUtils.convertMovieEntityToDTO(movie);
 		ShoppingCart shoppingCart = getShoppingCart();
@@ -72,17 +79,35 @@ public class StoreFrontController {
 	}
 	
 	
+	
+	
 	@RequestMapping("/processorder")
 	public ModelAndView processorder(Authentication authentication, Model model) {
-		User user = (User)authentication.getPrincipal();
-		System.out.println("user = "+user);
-		handleRequest("processorder", model);
+		handleRequest(AppConstants.RB_PROCESS_ORDER, model);
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
+	
+	
+	
+	@RequestMapping("/orderdetails")
+	public ModelAndView orderdetails(
+			@RequestParam(name=AppConstants.PARAM_ORDER_ID, required=true) Integer orderid,
+			Authentication authentication, 
+			Model model) {
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put(AppConstants.PARAM_ORDER_ID, orderid);
+		handleRequest(AppConstants.RB_ORDER_DETAILS,parameters, model);
+		return new ModelAndView("store/storefront_basepage");
+	}
+	
+	
+	
+	
+	
 	@RequestMapping("/orderhistory")
 	public ModelAndView orderhistory(Model model) {
-		handleRequest("orderhistory", model);
+		handleRequest(AppConstants.RB_ORDER_HISTORY, model);
 		return new ModelAndView("store/storefront_basepage");
 	}
 		
@@ -93,7 +118,7 @@ public class StoreFrontController {
 		handleRequest(requestName, null,model);
 	}
 	
-	private void handleRequest(String requestName, Map<String, String> parameters, Model model) {
+	private void handleRequest(String requestName, Map<String, Object> parameters, Model model) {
 		StorefrontBaseRequest<?> request = requestFinderService.findRequestByName(requestName);
 		request.setParameters(parameters);
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -106,26 +131,35 @@ public class StoreFrontController {
 
 	
 	
+	
+	
+	/**
+	 * 
+	 * Start REST service handlers
+	 * 
+	 */
+	
 	@RequestMapping("/rest/searchmovies")
 	@ResponseBody
-	public SearchMoviesListDTO searchmovies(@RequestParam(name="q") String search) {
+	public SearchMoviesListDTO searchmovies(
+			@RequestParam(name=AppConstants.PARAM_QUERY) String search) {
 		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(storeFrontService.searchMovies(search));
 		SearchMoviesListDTO searchMovieListDTO = new SearchMoviesListDTO();
 		searchMovieListDTO.setMovies(movieDTOs);
 		return searchMovieListDTO;
 	}
 	
+	
+	
 	@RequestMapping("/rest/movielist")
 	@ResponseBody
 	public MovieListDTO movielist(
-			@RequestParam(name="pagesize", defaultValue="10") Integer pagesize,
-			@RequestParam(name="page", defaultValue="0") Integer pageToFetch){
+			@RequestParam(name=AppConstants.PARAM_PAGE_SIZE, defaultValue="10") Integer pagesize,
+			@RequestParam(name=AppConstants.PARAM_PAGE, defaultValue="0") Integer pageToFetch){
 		
 		Page<Movie> page = null;
 
 		page = storeFrontService.listMovies(pageToFetch);
-		
-		
 		
 		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(page.getContent());
 		//mark the movies that are already in the shopping cart
@@ -145,6 +179,9 @@ public class StoreFrontController {
 		return movieListDTO;
 	}
 	
+	
+	
+	
 	@RequestMapping({"/rest/shoppingcart"})
 	@ResponseBody
 	public ShoppingCart shoppingCart(HttpSession session) {
@@ -152,11 +189,14 @@ public class StoreFrontController {
 		return shoppingCart;
 	}
 	
+	
+	
+	
 	@RequestMapping({"/rest/updateshoppingcart"})
 	@ResponseBody
 	public ShoppingCart updateShoppingCart(
-			@RequestParam(name="action") String action,
-			@RequestParam(name="movieid", required=true) Integer movieid, 
+			@RequestParam(name=AppConstants.PARAM_UPDATE_ACTION) String action,
+			@RequestParam(name=AppConstants.PARAM_MOVIE_ID, required=true) Integer movieid, 
 			HttpSession session) {
 		ShoppingCart shoppingCart = getShoppingCart();
 		if(action!=null && movieid!=null) {
@@ -182,9 +222,9 @@ public class StoreFrontController {
 	@RequestMapping("/rest/updatecartquantity")
 	@ResponseBody
 	public ShoppingCart updateCartQuantity(
-			@RequestParam(name="movieid", required=true) Integer movieid,
-			@RequestParam(name="quantity",required=true) Integer quantity) 
-	{
+			@RequestParam(name=AppConstants.PARAM_MOVIE_ID, required=true) Integer movieid,
+			@RequestParam(name=AppConstants.PARAM_QUANTITY,required=true) Integer quantity){
+		
 		ShoppingCart shoppingCart = getShoppingCart();
 		shoppingCart.updateQuantity(movieid, quantity);
 		

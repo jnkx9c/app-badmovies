@@ -6,19 +6,14 @@
 
 <script>
 	var initPage = function(){
-
 	}
 	
-
-
-	
 </script>
+Order Details
 
-<style>
-
-  
-</style>
-
-  
-Your order was placed.  Thanks!
-${storefrontresponse.processedOrder}
+${storefrontresponse.order.id}<br/>
+orderItems = ${storefrontresponse.order.orderItems}
+<br/>
+<c:forEach items="${storefrontresponse.order.orderItems}" var="orderitem">
+  <div>${orderitem}</div>
+</c:forEach>

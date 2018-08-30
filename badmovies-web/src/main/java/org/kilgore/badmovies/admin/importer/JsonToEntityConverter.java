@@ -29,16 +29,17 @@ public class JsonToEntityConverter {
 			retVal.setProduction(jsonDTO.getProduction());
 			retVal.setRated(jsonDTO.getRated());
 			if(jsonDTO.getRatings()!=null) {
-				List<Rating> ratings = new ArrayList<>();
+				//List<Rating> ratings = new ArrayList<>();
 				for(RatingsJsonDTO ratingsJsonDTO: jsonDTO.getRatings()) {
 					Rating rating = convertJsonDTOToRating(ratingsJsonDTO);
 					if(rating!=null) {
-						ratings.add(rating);
+						//ratings.add(rating);
+						retVal.addRating(rating);
 					}
 				}
+
 			}
 			
-			//retVal.setRatings(ratings);
 			retVal.setReleased(jsonDTO.getReleased());
 			retVal.setResponse(jsonDTO.getResponse());
 			retVal.setRuntime(jsonDTO.getRuntime());

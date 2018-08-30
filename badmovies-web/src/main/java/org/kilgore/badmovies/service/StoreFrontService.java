@@ -130,6 +130,16 @@ public class StoreFrontService {
 		
 		return persistedOrder;
 	}
+
+
+	public Order findOrder(User user, Integer orderId) {
+		return orderRepository.findByIdAndUser(orderId,user);
+	}
+
+
+	public List<Order> findOrders(User user) {
+		return orderRepository.findByUser(user);
+	}
 	
 	
 }

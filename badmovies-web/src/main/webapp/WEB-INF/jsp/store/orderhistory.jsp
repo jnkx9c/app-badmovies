@@ -9,4 +9,9 @@
 	}
 	
 </script>
+
 Order History
+<c:forEach var="order" items="${storefrontresponse.orders}">
+ <div><a href="orderdetails?orderid=${order.id}"> ${order.id} </a> </div>
+</c:forEach>
+

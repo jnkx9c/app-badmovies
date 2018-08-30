@@ -1,5 +1,6 @@
 package org.kilgore.badmovies.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -212,6 +213,16 @@ public class Movie extends BaseEntityObject{
 	}
 	public void setPrice(Float price) {
 		this.price = price;
+	}
+	public void addRating(Rating rating) {
+		if(rating!=null) {
+			if(ratings==null) {
+				ratings = new ArrayList<>();
+			}
+		ratings.add(rating);
+		rating.setMovie(this);
+		}
+		
 	}	
 	
 	

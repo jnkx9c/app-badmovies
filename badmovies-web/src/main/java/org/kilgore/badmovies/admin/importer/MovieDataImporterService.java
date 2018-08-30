@@ -7,6 +7,7 @@ import java.net.URL;
 import javax.annotation.PostConstruct;
 
 import org.kilgore.badmovies.entity.Movie;
+import org.kilgore.badmovies.entity.Rating;
 import org.kilgore.badmovies.repo.MovieRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -99,6 +100,7 @@ public class MovieDataImporterService {
 				MovieJsonDTO jsonMovie = mapper.readValue(new URL("http://www.omdbapi.com/?apikey="+apikey+"&i="+imdbId+"&plot=full"), MovieJsonDTO.class);
 				Movie convertedMovie = JsonToEntityConverter.convertJsonDTOToMovie(jsonMovie);
 				convertedMovie.setPrice(1.99f);
+
 				retVal = movieRepository.save(convertedMovie);
 			} catch (JsonParseException e) {
 				// TODO Auto-generated catch block
