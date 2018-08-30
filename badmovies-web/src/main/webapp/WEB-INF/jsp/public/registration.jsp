@@ -20,10 +20,8 @@
 <c:set var="Efirstname" value="${bindingresult.hasFieldErrors('firstname')}"/>
 <c:set var="Efirstname" value="${bindingresult.getFieldErrors('firstname')}"/>
 
-
-
   <div class="formdata">   
-  <form:form method="post" action="<c:url value='register'/>" modelAttribute="registrationform"> 
+  <form:form method="post" action="register" modelAttribute="registrationform"> 
               
       <div class="row">
         <div class="col">

@@ -127,6 +127,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			public void createUser(UserDetails user) {
 				//all site users must have the USER role.  give it to them.
 				Authority userAuthority =  authorityRepo.findByAuthority("ROLE_USER");
+				if(userAuthority==null) {
+					userAuthority = new Authority();
+					userAuthority.setAuthority("ROLE_USER");
+					userAuthority = authorityRepo.save(userAuthority);
+					
+				}
 				((User)user).addAuthority(userAuthority);
 				
 				//since this is a new user, it's password is plaintext.  Need to encrypt to save in the database.
