@@ -6,7 +6,7 @@
 	<groupId>org.kilgore</groupId>
 	<artifactId>badmovies-web</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>badmovies-web</name>
 	<description>a Task Execution Container</description>
