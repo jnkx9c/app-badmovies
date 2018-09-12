@@ -50,7 +50,7 @@
 					
 					var $rowDiv = $(moviesection).find('.row').last();
 					
-					var $movieBoxDiv = $('<div class="moviebox-container col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2"><div>');
+					var $movieBoxDiv = $('<div class="moviebox-container col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 mb-3"><div>');
 					$movieBoxDiv.attr('data-movieid',movie.movieId);
 					
 					//add the poster
