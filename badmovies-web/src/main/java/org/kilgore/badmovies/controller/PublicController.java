@@ -4,7 +4,6 @@ import javax.validation.Valid;
 
 import org.kilgore.badmovies.entity.User;
 import org.kilgore.badmovies.form.RegistrationForm;
-import org.kilgore.badmovies.repo.UserRepo;
 import org.kilgore.badmovies.util.MiscUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
