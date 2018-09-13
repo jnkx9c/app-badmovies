@@ -190,10 +190,6 @@ public class StoreFrontController {
 	public MovieListDTO movielist(
 			@RequestParam(name=AppConstants.PARAM_PAGE_SIZE, defaultValue="10") Integer pagesize,
 			@RequestParam(name=AppConstants.PARAM_PAGE, defaultValue="0") Integer pageToFetch){
-		
-//		Page<Movie> page = null;
-//
-//		page = storeFrontService.listMovies(pageToFetch);
 
 		Page<Movie> page = movieRepository.findAll(PageRequest.of(pageToFetch, 12));		
 		
@@ -270,6 +266,10 @@ public class StoreFrontController {
 	}
 	
 
+	
+	/*
+	 * Start Convenience Methods
+	 */
 	
 	private ShoppingCart getShoppingCart() {
 		ShoppingCart shoppingCart = null;
