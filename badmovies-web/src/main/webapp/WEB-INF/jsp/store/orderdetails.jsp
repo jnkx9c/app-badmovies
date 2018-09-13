@@ -1,7 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
+<%@ include file="/WEB-INF/jsp/include.jsp" %>
+
 
 
 <script>
@@ -27,9 +25,9 @@ ${storefrontresponse.order.id}<br/>
     <span>Total Items:</span>
     <c:out value="${storefrontresponse.order.totalOrderQuantity}"/>
   </div>
-<c:forEach items="${storefrontresponse.order.orderItems}" var="orderitem">
-  <div class="row">
-  ${orderitem.movie.title}
-  </div>
-</c:forEach>
+  <c:forEach items="${storefrontresponse.order.orderItems}" var="orderitem">
+    <div class="row">
+    ${orderitem.movie.title}
+    </div>
+  </c:forEach>
 </div>

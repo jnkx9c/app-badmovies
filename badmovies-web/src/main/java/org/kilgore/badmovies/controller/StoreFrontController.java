@@ -29,7 +29,6 @@ import org.kilgore.badmovies.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -64,8 +63,8 @@ public class StoreFrontController {
 	public ModelAndView productlistingPage(@RequestParam(name="page", defaultValue="0") Integer page,Model model) {
 		model.addAttribute("page",page);
 		ProductListingResponse response = new ProductListingResponse();
+		response.setShoppingCart(getShoppingCart());
 		model.addAttribute("storefrontresponse",response);
-
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -109,7 +108,7 @@ public class StoreFrontController {
 		
 		//finally, clear the shopping cart
 		getShoppingCart().clear();	
-		
+		response.setShoppingCart(getShoppingCart());
 		model.addAttribute("storefrontresponse",response);
 		return new ModelAndView("store/storefront_basepage");
 	}
@@ -126,6 +125,7 @@ public class StoreFrontController {
 		OrderDetailsResponse response = new OrderDetailsResponse();
 		Order order = orderRepository.findByIdAndUser(orderid,getUser());
 		response.setOrder(order);
+		response.setShoppingCart(getShoppingCart());
 		model.addAttribute("storefrontresponse",response);
 
 		return new ModelAndView("store/storefront_basepage");
