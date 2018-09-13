@@ -1,8 +1,5 @@
 package org.kilgore.badmovies.admin.importer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.kilgore.badmovies.entity.Movie;
 import org.kilgore.badmovies.entity.Rating;
 
