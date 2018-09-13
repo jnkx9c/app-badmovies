@@ -2,7 +2,6 @@ package org.kilgore.badmovies.response;
 
 import java.util.List;
 
-import org.kilgore.badmovies.domain.ShoppingCart;
 import org.kilgore.badmovies.entity.Movie;
 
 public class ShoppingCartPageResponse extends StorefrontBaseResponse{
