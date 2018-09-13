@@ -2,14 +2,12 @@ package org.kilgore.badmovies.domain;
 
 import java.io.Serializable;
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.kilgore.badmovies.entity.Movie;
-import org.springframework.format.number.CurrencyStyleFormatter;
 
 
 public class ShoppingCart implements Serializable{
