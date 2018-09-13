@@ -1,26 +1,35 @@
 package org.kilgore.badmovies.controller;
 
-import java.security.Principal;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
 import org.kilgore.badmovies.domain.ShoppingCart;
+import org.kilgore.badmovies.domain.ShoppingCartItem;
 import org.kilgore.badmovies.dto.DTO_EntityConversionUtils;
 import org.kilgore.badmovies.dto.MovieDTO;
 import org.kilgore.badmovies.dto.MovieListDTO;
 import org.kilgore.badmovies.dto.SearchMoviesListDTO;
 import org.kilgore.badmovies.entity.Movie;
+import org.kilgore.badmovies.entity.Order;
+import org.kilgore.badmovies.entity.OrderItem;
 import org.kilgore.badmovies.entity.User;
-import org.kilgore.badmovies.request.RequestFinderService;
-import org.kilgore.badmovies.request.StorefrontBaseRequest;
-import org.kilgore.badmovies.response.StorefrontBaseResponse;
-import org.kilgore.badmovies.service.StoreFrontService;
+import org.kilgore.badmovies.repo.MovieRepo;
+import org.kilgore.badmovies.repo.OrderRepo;
+import org.kilgore.badmovies.response.OrderDetailsResponse;
+import org.kilgore.badmovies.response.OrderHistoryResponse;
+import org.kilgore.badmovies.response.ProcessOrderResponse;
+import org.kilgore.badmovies.response.ProductListingResponse;
+import org.kilgore.badmovies.response.ShoppingCartPageResponse;
 import org.kilgore.badmovies.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -34,12 +43,15 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 @RequestMapping("/storefront")
 public class StoreFrontController {
-
-	@Autowired
-	private StoreFrontService storeFrontService;
 	
 	@Autowired
-	private RequestFinderService requestFinderService;
+	private HttpSession session;	
+	
+	@Autowired
+	private MovieRepo movieRepository;	
+	
+	@Autowired
+	private OrderRepo orderRepository;	
 	
 	
 	@RequestMapping({"/",""})
@@ -50,8 +62,10 @@ public class StoreFrontController {
 	
 	@RequestMapping({"/products"})
 	public ModelAndView productlistingPage(@RequestParam(name="page", defaultValue="0") Integer page,Model model) {
-		handleRequest(AppConstants.RB_PRODUCTS,model);
 		model.addAttribute("page",page);
+		ProductListingResponse response = new ProductListingResponse();
+		model.addAttribute("storefrontresponse",response);
+
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -59,7 +73,13 @@ public class StoreFrontController {
 	
 	@RequestMapping("/shoppingcart")
 	public ModelAndView shoppingCartPage(Model model) {
-		handleRequest(AppConstants.RB_SHOPPINGCART_PAGE,model);
+		ShoppingCartPageResponse response = new ShoppingCartPageResponse();
+		ShoppingCart shoppingCart = getShoppingCart();
+
+		shoppingCart.calculateTotal();
+		response.setShoppingCart(shoppingCart);
+		model.addAttribute("storefrontresponse",response);
+		
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -68,7 +88,7 @@ public class StoreFrontController {
 	
 	@RequestMapping("/moviedetails")
 	public ModelAndView movieDetails(@RequestParam(AppConstants.PARAM_MOVIE_ID) Integer movieId,Model model) {
-		Movie movie = storeFrontService.findMovieById(movieId);
+		Movie movie = findMovieById(movieId);
 		MovieDTO movieDTO = DTO_EntityConversionUtils.convertMovieEntityToDTO(movie);
 		ShoppingCart shoppingCart = getShoppingCart();
 		if(shoppingCart!=null) {
@@ -83,7 +103,14 @@ public class StoreFrontController {
 	
 	@RequestMapping("/processorder")
 	public ModelAndView processorder(Authentication authentication, Model model) {
-		handleRequest(AppConstants.RB_PROCESS_ORDER, model);
+		ProcessOrderResponse response = new ProcessOrderResponse();
+		Order order = createOrder(getUser(),getShoppingCart());
+		response.setProcessedOrder(order);
+		
+		//finally, clear the shopping cart
+		getShoppingCart().clear();	
+		
+		model.addAttribute("storefrontresponse",response);
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -95,9 +122,12 @@ public class StoreFrontController {
 			@RequestParam(name=AppConstants.PARAM_ORDER_ID, required=true) Integer orderid,
 			Authentication authentication, 
 			Model model) {
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put(AppConstants.PARAM_ORDER_ID, orderid);
-		handleRequest(AppConstants.RB_ORDER_DETAILS,parameters, model);
+		
+		OrderDetailsResponse response = new OrderDetailsResponse();
+		Order order = orderRepository.findByIdAndUser(orderid,getUser());
+		response.setOrder(order);
+		model.addAttribute("storefrontresponse",response);
+
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -107,30 +137,27 @@ public class StoreFrontController {
 	
 	@RequestMapping("/orderhistory")
 	public ModelAndView orderhistory(Model model) {
-		handleRequest(AppConstants.RB_ORDER_HISTORY, model);
+		OrderHistoryResponse response = new OrderHistoryResponse();
+		List<Order> orders = orderRepository.findByUser(getUser());
+		response.setOrders(orders);
+		response.setShoppingCart(getShoppingCart());
+		model.addAttribute("storefrontresponse",response);
+
 		return new ModelAndView("store/storefront_basepage");
 	}
 		
 	
 	
-	
-	private void handleRequest(String requestName, Model model) {
-		handleRequest(requestName, null,model);
-	}
-	
-	private void handleRequest(String requestName, Map<String, Object> parameters, Model model) {
-		StorefrontBaseRequest<?> request = requestFinderService.findRequestByName(requestName);
-		request.setParameters(parameters);
+
+	private User getUser() {
+		User user = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if(authentication!=null) {
-			request.setUser((User)authentication.getPrincipal());
+			user = ((User)authentication.getPrincipal());
 		}
-		StorefrontBaseResponse response = request.execute();
-		model.addAttribute("storefrontresponse",response);
+		return user;
+		
 	}
-
-	
-	
 	
 	
 	/**
@@ -143,7 +170,14 @@ public class StoreFrontController {
 	@ResponseBody
 	public SearchMoviesListDTO searchmovies(
 			@RequestParam(name=AppConstants.PARAM_QUERY) String search) {
-		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(storeFrontService.searchMovies(search));
+		
+		List<Movie> movieList = new ArrayList<>();
+		Iterable<Movie> movieIterable = movieRepository.findByTitleContaining(search);
+		if(movieIterable!=null) {
+			movieIterable.forEach(movieList::add);
+		}
+		
+		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(movieList);
 		SearchMoviesListDTO searchMovieListDTO = new SearchMoviesListDTO();
 		searchMovieListDTO.setMovies(movieDTOs);
 		return searchMovieListDTO;
@@ -157,9 +191,11 @@ public class StoreFrontController {
 			@RequestParam(name=AppConstants.PARAM_PAGE_SIZE, defaultValue="10") Integer pagesize,
 			@RequestParam(name=AppConstants.PARAM_PAGE, defaultValue="0") Integer pageToFetch){
 		
-		Page<Movie> page = null;
+//		Page<Movie> page = null;
+//
+//		page = storeFrontService.listMovies(pageToFetch);
 
-		page = storeFrontService.listMovies(pageToFetch);
+		Page<Movie> page = movieRepository.findAll(PageRequest.of(pageToFetch, 12));		
 		
 		List<MovieDTO> movieDTOs = DTO_EntityConversionUtils.convertMovieEntitiesToDTOs(page.getContent());
 		//mark the movies that are already in the shopping cart
@@ -202,7 +238,7 @@ public class StoreFrontController {
 		if(action!=null && movieid!=null) {
 			switch (action) {
 			case "add":
-				Movie movie = storeFrontService.findMovieById(movieid);
+				Movie movie = findMovieById(movieid);
 				shoppingCart.addItem(movie);
 				break;
 			case "remove":
@@ -236,8 +272,64 @@ public class StoreFrontController {
 
 	
 	private ShoppingCart getShoppingCart() {
-		return storeFrontService.getShoppingCart();
+		ShoppingCart shoppingCart = null;
+		if(session!=null) {
+			shoppingCart = (ShoppingCart) session.getAttribute("SHOPPING_CART");
+			if(shoppingCart==null) {
+				shoppingCart = new ShoppingCart();
+				session.setAttribute("SHOPPING_CART", shoppingCart);
+			}
+		}
+	
+		return shoppingCart;		
 	}
+	
+	
+	
+	private Movie findMovieById(Integer movieId) {
+		Optional<Movie> optional= movieRepository.findById(movieId);
+		Movie movie = null;
+		if(optional.isPresent()) {
+			movie=optional.get();
+		}
+		return movie;
+	}
+	
+	
+	
+	private Order createOrder(User user, ShoppingCart shoppingCart) {
+		Order persistedOrder = null;
+		int totalOrderQuantity=0;
+		float totalOrderPrice = 0;
+		if(user!=null && shoppingCart!=null) {
+
+			Collection<ShoppingCartItem> shoppingCartItems = shoppingCart.getItemIdMap().values();
+			if(shoppingCartItems!=null && !shoppingCartItems.isEmpty()) {
+				Order order = new Order();
+				order.setUser(user);
+				order.setOrderDate(new Date());
+				for(ShoppingCartItem shoppingCartItem: shoppingCartItems) {
+					OrderItem orderItem = new OrderItem();
+					Movie movie = findMovieById(shoppingCartItem.getItemId());
+					orderItem.setMovie(movie);
+					orderItem.setQuantity(shoppingCartItem.getQuantity());
+					orderItem.setPrice(shoppingCartItem.getPrice());
+					totalOrderQuantity += shoppingCartItem.getQuantity();
+					totalOrderPrice += (shoppingCartItem.getPrice()*shoppingCartItem.getQuantity());
+					order.addOrderItem(orderItem);
+					
+				}
+				order.setTotalOrderPrice(totalOrderPrice);
+				order.setTotalOrderQuantity(totalOrderQuantity);
+				persistedOrder = orderRepository.save(order);
+			}
+			
+
+		}
+
+		
+		return persistedOrder;
+	}	
 
 	
 	
