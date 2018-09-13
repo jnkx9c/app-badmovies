@@ -105,5 +105,5 @@ Subtotal (<span class="sc-itemcount">${storefrontresponse.shoppingCart.itemCount
 </span>
 
 <form action="<c:url value='/storefront/processorder'/>">
-  <button type="submit" class="but but-primary">Make Purchase</button>
+  <button type="submit" class="btn btn-primary">Make Purchase</button>
 </form>
