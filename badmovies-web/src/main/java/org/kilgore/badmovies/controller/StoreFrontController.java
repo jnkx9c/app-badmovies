@@ -243,6 +243,16 @@ public class StoreFrontController {
 		return shoppingCart;
 	}
 	
+	@RequestMapping("/rest/clearshoppingcart")
+	@ResponseBody
+	public ShoppingCart clearShoppingCart() {
+		logger.trace("clearShoppingCart called");
+		ShoppingCart cart = getShoppingCart();
+		cart.clear();
+		return cart;
+	}
+	
+	
 	
 	@RequestMapping("/rest/updatecartquantity")
 	@ResponseBody

@@ -8,6 +8,7 @@
 	var initPage = function(){
 		initMovieContainers();
 		initDetailsModal();
+		initClearCartButton();
 	}
 	
 	function initDetailsModal(){
@@ -185,7 +186,19 @@
 	
 	
 
-	
+	function initClearCartButton(){
+		$('#btn-clearcart').on('click',function(){
+    		$.ajax({
+    			  url: "<c:url value='/storefront/rest/clearshoppingcart'/>",
+    			  success: function(data){
+    				  console.debug("clearShoppingCart returned: "+data);
+    				  $("#shoppingcart-itemcount").text(data.itemCount);
+    				  $(".moviebox-container span.moviebox-shoppingcart").removeClass('text-success');
+    			  },
+    			  dataType: 'json'
+    			});
+		});
+	}
 	
 	
 
@@ -197,6 +210,12 @@
   <nav>
     <ul class="pagination"></ul>
   </nav>
+  <div>
+    <a href="shoppingcart" class="btn btn-primary">Check Out</a>
+    <button id="btn-clearcart" class="btn btn-secondary">Clear Cart</button>
+  </div>
+  <span class="small"><i class="fa fa-info-circle"></i>Click the shopping cart icon next to a movie to add/remove it to the cart.</span>
+  
   <%--modal box for movie details --%>
   <div class="modal fade" id="moviedetails-modal" tabindex="-1" role="dialog"></div>
   
