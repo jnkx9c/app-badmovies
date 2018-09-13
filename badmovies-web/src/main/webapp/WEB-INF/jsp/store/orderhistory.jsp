@@ -9,7 +9,7 @@
 
 Order History
 <div class="container">
-  <c:forEach var="order" items="${storefrontresponse.orders}">
+  <c:forEach var="order" items="${orders}">
     <div class="row">
       <div class="col col-2">
         <fmt:formatDate value="${order.orderDate}" type="date"/>

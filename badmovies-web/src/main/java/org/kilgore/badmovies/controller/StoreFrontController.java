@@ -8,6 +8,8 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kilgore.badmovies.domain.ShoppingCart;
 import org.kilgore.badmovies.domain.ShoppingCartItem;
 import org.kilgore.badmovies.dto.DTO_EntityConversionUtils;
@@ -20,11 +22,6 @@ import org.kilgore.badmovies.entity.OrderItem;
 import org.kilgore.badmovies.entity.User;
 import org.kilgore.badmovies.repo.MovieRepo;
 import org.kilgore.badmovies.repo.OrderRepo;
-import org.kilgore.badmovies.response.OrderDetailsResponse;
-import org.kilgore.badmovies.response.OrderHistoryResponse;
-import org.kilgore.badmovies.response.ProcessOrderResponse;
-import org.kilgore.badmovies.response.ProductListingResponse;
-import org.kilgore.badmovies.response.ShoppingCartPageResponse;
 import org.kilgore.badmovies.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,6 +40,9 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/storefront")
 public class StoreFrontController {
 	
+	private final Log logger = LogFactory.getLog(getClass());
+
+	
 	@Autowired
 	private HttpSession session;	
 	
@@ -53,18 +53,20 @@ public class StoreFrontController {
 	private OrderRepo orderRepository;	
 	
 	
+	
+	
 	@RequestMapping({"/",""})
 	public RedirectView redirectToProducts() {
+		logger.trace("redirectToProducts called");
 		return new RedirectView("/storefront/products",true);
 	}
 
 	
 	@RequestMapping({"/products"})
-	public ModelAndView productlistingPage(@RequestParam(name="page", defaultValue="0") Integer page,Model model) {
+	public ModelAndView productlistingPage(@RequestParam(name=AppConstants.PARAM_PAGE, defaultValue="0") Integer page,Model model) {
+		logger.trace("productlistingPage called");
 		model.addAttribute("page",page);
-		ProductListingResponse response = new ProductListingResponse();
-		response.setShoppingCart(getShoppingCart());
-		model.addAttribute("storefrontresponse",response);
+		model.addAttribute(AppConstants.REQ_VIEW,"product-listing");
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -72,13 +74,10 @@ public class StoreFrontController {
 	
 	@RequestMapping("/shoppingcart")
 	public ModelAndView shoppingCartPage(Model model) {
-		ShoppingCartPageResponse response = new ShoppingCartPageResponse();
+		logger.trace("shoppingCartPage called");
 		ShoppingCart shoppingCart = getShoppingCart();
-
 		shoppingCart.calculateTotal();
-		response.setShoppingCart(shoppingCart);
-		model.addAttribute("storefrontresponse",response);
-		
+		model.addAttribute(AppConstants.REQ_VIEW,"shoppingcart");
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -87,6 +86,7 @@ public class StoreFrontController {
 	
 	@RequestMapping("/moviedetails")
 	public ModelAndView movieDetails(@RequestParam(AppConstants.PARAM_MOVIE_ID) Integer movieId,Model model) {
+		logger.trace("moviewDetails called");
 		Movie movie = findMovieById(movieId);
 		MovieDTO movieDTO = DTO_EntityConversionUtils.convertMovieEntityToDTO(movie);
 		ShoppingCart shoppingCart = getShoppingCart();
@@ -102,14 +102,12 @@ public class StoreFrontController {
 	
 	@RequestMapping("/processorder")
 	public ModelAndView processorder(Authentication authentication, Model model) {
-		ProcessOrderResponse response = new ProcessOrderResponse();
+
+		logger.trace("processorder called");
 		Order order = createOrder(getUser(),getShoppingCart());
-		response.setProcessedOrder(order);
-		
-		//finally, clear the shopping cart
 		getShoppingCart().clear();	
-		response.setShoppingCart(getShoppingCart());
-		model.addAttribute("storefrontresponse",response);
+		model.addAttribute("processedorder",order);
+		model.addAttribute(AppConstants.REQ_VIEW,"orderconfirmation");
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -121,13 +119,11 @@ public class StoreFrontController {
 			@RequestParam(name=AppConstants.PARAM_ORDER_ID, required=true) Integer orderid,
 			Authentication authentication, 
 			Model model) {
-		
-		OrderDetailsResponse response = new OrderDetailsResponse();
-		Order order = orderRepository.findByIdAndUser(orderid,getUser());
-		response.setOrder(order);
-		response.setShoppingCart(getShoppingCart());
-		model.addAttribute("storefrontresponse",response);
 
+		logger.trace("orderdetails called");
+		Order order = orderRepository.findByIdAndUser(orderid,getUser());
+		model.addAttribute(AppConstants.REQ_VIEW,"orderdetails");
+		model.addAttribute("order",order);
 		return new ModelAndView("store/storefront_basepage");
 	}
 	
@@ -137,27 +133,18 @@ public class StoreFrontController {
 	
 	@RequestMapping("/orderhistory")
 	public ModelAndView orderhistory(Model model) {
-		OrderHistoryResponse response = new OrderHistoryResponse();
-		List<Order> orders = orderRepository.findByUser(getUser());
-		response.setOrders(orders);
-		response.setShoppingCart(getShoppingCart());
-		model.addAttribute("storefrontresponse",response);
 
+		logger.trace("orderhistory called");
+		List<Order> orders = orderRepository.findByUser(getUser());
+		model.addAttribute(AppConstants.REQ_VIEW,"orderhistory");
+		model.addAttribute("orders",orders);
 		return new ModelAndView("store/storefront_basepage");
 	}
 		
 	
 	
 
-	private User getUser() {
-		User user = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if(authentication!=null) {
-			user = ((User)authentication.getPrincipal());
-		}
-		return user;
-		
-	}
+
 	
 	
 	/**
@@ -170,7 +157,8 @@ public class StoreFrontController {
 	@ResponseBody
 	public SearchMoviesListDTO searchmovies(
 			@RequestParam(name=AppConstants.PARAM_QUERY) String search) {
-		
+		logger.trace("searchMovies called");
+
 		List<Movie> movieList = new ArrayList<>();
 		Iterable<Movie> movieIterable = movieRepository.findByTitleContaining(search);
 		if(movieIterable!=null) {
@@ -190,6 +178,7 @@ public class StoreFrontController {
 	public MovieListDTO movielist(
 			@RequestParam(name=AppConstants.PARAM_PAGE_SIZE, defaultValue="10") Integer pagesize,
 			@RequestParam(name=AppConstants.PARAM_PAGE, defaultValue="0") Integer pageToFetch){
+		logger.trace("movielist called");
 
 		Page<Movie> page = movieRepository.findAll(PageRequest.of(pageToFetch, 12));		
 		
@@ -217,6 +206,8 @@ public class StoreFrontController {
 	@RequestMapping({"/rest/shoppingcart"})
 	@ResponseBody
 	public ShoppingCart shoppingCart(HttpSession session) {
+		logger.trace("shoppingCart called");
+
 		ShoppingCart shoppingCart = getShoppingCart();
 		return shoppingCart;
 	}
@@ -227,9 +218,11 @@ public class StoreFrontController {
 	@RequestMapping({"/rest/updateshoppingcart"})
 	@ResponseBody
 	public ShoppingCart updateShoppingCart(
-			@RequestParam(name=AppConstants.PARAM_UPDATE_ACTION) String action,
+			@RequestParam(name=AppConstants.PARAM_ACTION) String action,
 			@RequestParam(name=AppConstants.PARAM_MOVIE_ID, required=true) Integer movieid, 
 			HttpSession session) {
+		logger.trace("updateShoppingCart called");
+
 		ShoppingCart shoppingCart = getShoppingCart();
 		if(action!=null && movieid!=null) {
 			switch (action) {
@@ -256,7 +249,9 @@ public class StoreFrontController {
 	public ShoppingCart updateCartQuantity(
 			@RequestParam(name=AppConstants.PARAM_MOVIE_ID, required=true) Integer movieid,
 			@RequestParam(name=AppConstants.PARAM_QUANTITY,required=true) Integer quantity){
-		
+
+		logger.trace("updateCartQuantity called");
+
 		ShoppingCart shoppingCart = getShoppingCart();
 		shoppingCart.updateQuantity(movieid, quantity);
 		
@@ -274,10 +269,10 @@ public class StoreFrontController {
 	private ShoppingCart getShoppingCart() {
 		ShoppingCart shoppingCart = null;
 		if(session!=null) {
-			shoppingCart = (ShoppingCart) session.getAttribute("SHOPPING_CART");
+			shoppingCart = (ShoppingCart) session.getAttribute(AppConstants.SESS_SHOPPING_CART);
 			if(shoppingCart==null) {
 				shoppingCart = new ShoppingCart();
-				session.setAttribute("SHOPPING_CART", shoppingCart);
+				session.setAttribute(AppConstants.SESS_SHOPPING_CART, shoppingCart);
 			}
 		}
 	
@@ -331,6 +326,14 @@ public class StoreFrontController {
 		return persistedOrder;
 	}	
 
-	
+	private User getUser() {
+		User user = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication!=null) {
+			user = ((User)authentication.getPrincipal());
+		}
+		return user;
+		
+	}
 	
 }

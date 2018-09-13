@@ -19,4 +19,4 @@
 
   
 Your order was placed.  Thanks!
-${storefrontresponse.processedOrder}
+${processedorder}

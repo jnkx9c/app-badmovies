@@ -25,7 +25,7 @@
           <a href="shoppingcart" id="cart">
           <i class="fa fa-shopping-cart"></i> Cart 
             <span id="shoppingcart-itemcount" class="badge badge-secondary sc-itemcount">
-              <c:out value="${storefrontresponse.shoppingCart.itemCount}"/>
+              <c:out value="${sessionScope[AppConstants.SESS_SHOPPING_CART].itemCount}"/>
             </span>
           </a>  
         </div>
@@ -36,10 +36,10 @@
         
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav  mr-auto">
-            <li class="nav-item ${storefrontresponse.view eq 'product-listing'?'active':'' }">
+            <li class="nav-item ${view eq 'product-listing'?'active':'' }">
               <a class="nav-link" href="<c:url value='/storefront/products'/>">Movies</a>
             </li>
-            <li class="nav-item ${storefrontresponse.view eq 'orderhistory'?'active':'' }">
+            <li class="nav-item ${view eq 'orderhistory'?'active':'' }">
               <a class="nav-link" href="<c:url value='/storefront/orderhistory'/>">Order History</a>
             </li>
             <li class="nav-item">

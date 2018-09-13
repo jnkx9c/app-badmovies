@@ -10,7 +10,7 @@ public class AppConstants {
 	public final static String PARAM_ORDER_ID = "orderid";
 	public final static String PARAM_PAGE = "page";
 	public final static String PARAM_PAGE_SIZE = "pagesize";
-	public final static String PARAM_UPDATE_ACTION = "action";
+	public final static String PARAM_ACTION = "action";
 	public final static String PARAM_QUANTITY = "quantity";
 	public final static String PARAM_QUERY = "q";
 	
@@ -26,6 +26,18 @@ public class AppConstants {
 	public static final String RB_ORDER_DETAILS = "orderdetails";
 	public static final String RB_ORDER_HISTORY = "orderhistory";
 	
+	
+	/*
+	 * Session Scope Parameter Names
+	 */
+	
+	public final static String SESS_SHOPPING_CART="shoppingcart";
+	
+	/*
+	 * Request Scope Parameter Names
+	 */
+	
+	public final static String REQ_VIEW = "view";
 	
 	
 }

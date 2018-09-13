@@ -9,23 +9,23 @@
 </script>
 Order Details
 
-${storefrontresponse.order.id}<br/>
+${order.id}<br/>
 <br/>
 
 <div class="container">
   <div class="row">
     <span>Order Date:</span>
-    <c:out value="${storefrontresponse.order.orderDate}"/>
+    <c:out value="${order.orderDate}"/>
   </div>
   <div class="row">
     <span>Order Price:</span>
-    <c:out value="${storefrontresponse.order.totalOrderPrice}"/>
+    <c:out value="${order.totalOrderPrice}"/>
   </div>
   <div class="row">
     <span>Total Items:</span>
-    <c:out value="${storefrontresponse.order.totalOrderQuantity}"/>
+    <c:out value="${order.totalOrderQuantity}"/>
   </div>
-  <c:forEach items="${storefrontresponse.order.orderItems}" var="orderitem">
+  <c:forEach items="${order.orderItems}" var="orderitem">
     <div class="row">
     ${orderitem.movie.title}
     </div>

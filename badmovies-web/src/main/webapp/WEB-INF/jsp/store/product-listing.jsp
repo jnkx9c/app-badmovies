@@ -55,7 +55,7 @@
 					$movieBoxPoster.attr('src',movie.poster);
 					$movieBoxPoster.click(function(){
 						$.ajax({
-							url:"<c:url value="/storefront/moviedetails"/>",
+							url:'<c:url value="/storefront/moviedetails"/>',
 							data: {'movieid':movie.movieId},
 							success: function(data){
 								var $moviedetailsmodal = $('#moviedetails-modal');
@@ -112,18 +112,18 @@
 		if(currentpage==0){
 			$pageLI.addClass('disabled');
 		}else{
-			$pageLI.find('a').attr('href','<c:url value="/storefront/products"/>?page='+(currentpage-1));
+			$pageLI.find('a').attr('href','<c:url value="/storefront/products"/>?${AppConstants.PARAM_PAGE}='+(currentpage-1));
 		}
 		$paginatorUL.append($pageLI);
 
 		for(i=0; i<movielistdto.totalPages; i++){
-			$pageLI = $('<li class="page-item"><a class="page-link" href="'+productsURL+'?page='+i+'">'+(i+1)+'</a></li>');
+			$pageLI = $('<li class="page-item"><a class="page-link" href="'+productsURL+'?${AppConstants.PARAM_PAGE}='+i+'">'+(i+1)+'</a></li>');
 			if(currentpage == i){
 				$pageLI.addClass('active');
 			}
 			$paginatorUL.append($pageLI);
 		}		
-		$paginatorUL.append('<li class="page-item"><a class="page-link" href="'+productsURL+'?page='+(movielistdto.totalPages-1)+'">Last</a></li>');
+		$paginatorUL.append('<li class="page-item"><a class="page-link" href="'+productsURL+'?${AppConstants.PARAM_PAGE}='+(movielistdto.totalPages-1)+'">Last</a></li>');
 
 	}
 
@@ -175,7 +175,7 @@
 	function updateShoppingChart(action,movieId){
 		$.ajax({
 		  url: "<c:url value='/storefront/rest/updateshoppingcart'/>",
-		  data: {'action':action,'movieid':movieId},
+		  data: {'${AppConstants.PARAM_ACTION}':action,'${AppConstants.PARAM_MOVIE_ID}':movieId},
 		  success: function(data){
 			  $("#shoppingcart-itemcount").text(data.itemCount);
 		  },
@@ -198,6 +198,6 @@
     <ul class="pagination"></ul>
   </nav>
   <%--modal box for movie details --%>
-  <div class="modal fade" id="moviedetails-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
+  <div class="modal fade" id="moviedetails-modal" tabindex="-1" role="dialog"></div>
   
   

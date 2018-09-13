@@ -22,7 +22,7 @@
 			  console.log(this.value);
 			  $.ajax({
 				  url: "<c:url value='/storefront/rest/searchmovies'/>",
-				  data:{'q':this.value},
+				  data:{'${AppConstants.PARAM_QUERY}':this.value},
 				  success:function(results){
 					  console.debug(results);
 				  }

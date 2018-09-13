@@ -69,13 +69,13 @@
   </style>
 
   
-Subtotal (<span class="sc-itemcount">${storefrontresponse.shoppingCart.itemCount}</span> items)
+Subtotal (<span class="sc-itemcount">${sessionScope.shoppingcart.itemCount}</span> items)
   <span class="sc-totalprice">
-    ${storefrontresponse.shoppingCart.formattedCartTotal}
+    ${sessionScope.shoppingcart.formattedCartTotal}
   </span>
 
 <div class="container">
-  <c:forEach items="${storefrontresponse.shoppingCart.itemIdMap}" var="entry">
+  <c:forEach items="${sessionScope.shoppingcart.itemIdMap}" var="entry">
     <div class="row">
       <div class="moviebox" data-movieid="${entry.key}">
         <img class="moviebox-poster" alt="" src="${entry.value.poster}">    
@@ -99,9 +99,9 @@ Subtotal (<span class="sc-itemcount">${storefrontresponse.shoppingCart.itemCount
 </div>
 
 
-Subtotal (<span class="sc-itemcount">${storefrontresponse.shoppingCart.itemCount}</span> items)
+Subtotal (<span class="sc-itemcount">${sessionScope.shoppingcart.itemCount}</span> items)
   <span class="sc-totalprice">
-  ${storefrontresponse.shoppingCart.formattedCartTotal}
+  ${sessionScope.shoppingcart.formattedCartTotal}
 </span>
 
 <form action="<c:url value='/storefront/processorder'/>">
