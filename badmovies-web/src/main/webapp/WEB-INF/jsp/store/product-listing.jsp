@@ -1,8 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>  
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>  
+<%@ include file="/WEB-INF/jsp/include.jsp" %>
+  
 
 
 <script>
@@ -11,6 +8,7 @@
 	var initPage = function(){
 		initMovieContainers();
 		initDetailsModal();
+		initClearCartButton();
 	}
 	
 	function initDetailsModal(){
@@ -50,7 +48,7 @@
 					
 					var $rowDiv = $(moviesection).find('.row').last();
 					
-					var $movieBoxDiv = $('<div class="moviebox-container col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2"><div>');
+					var $movieBoxDiv = $('<div class="moviebox-container col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 mb-3"><div>');
 					$movieBoxDiv.attr('data-movieid',movie.movieId);
 					
 					//add the poster
@@ -58,7 +56,7 @@
 					$movieBoxPoster.attr('src',movie.poster);
 					$movieBoxPoster.click(function(){
 						$.ajax({
-							url:"<c:url value="/storefront/moviedetails"/>",
+							url:'<c:url value="/storefront/moviedetails"/>',
 							data: {'movieid':movie.movieId},
 							success: function(data){
 								var $moviedetailsmodal = $('#moviedetails-modal');
@@ -115,18 +113,18 @@
 		if(currentpage==0){
 			$pageLI.addClass('disabled');
 		}else{
-			$pageLI.find('a').attr('href','<c:url value="/storefront/products"/>?page='+(currentpage-1));
+			$pageLI.find('a').attr('href','<c:url value="/storefront/products"/>?${AppConstants.PARAM_PAGE}='+(currentpage-1));
 		}
 		$paginatorUL.append($pageLI);
 
 		for(i=0; i<movielistdto.totalPages; i++){
-			$pageLI = $('<li class="page-item"><a class="page-link" href="'+productsURL+'?page='+i+'">'+(i+1)+'</a></li>');
+			$pageLI = $('<li class="page-item"><a class="page-link" href="'+productsURL+'?${AppConstants.PARAM_PAGE}='+i+'">'+(i+1)+'</a></li>');
 			if(currentpage == i){
 				$pageLI.addClass('active');
 			}
 			$paginatorUL.append($pageLI);
 		}		
-		$paginatorUL.append('<li class="page-item"><a class="page-link" href="'+productsURL+'?page='+(movielistdto.totalPages-1)+'">Last</a></li>');
+		$paginatorUL.append('<li class="page-item"><a class="page-link" href="'+productsURL+'?${AppConstants.PARAM_PAGE}='+(movielistdto.totalPages-1)+'">Last</a></li>');
 
 	}
 
@@ -178,7 +176,7 @@
 	function updateShoppingChart(action,movieId){
 		$.ajax({
 		  url: "<c:url value='/storefront/rest/updateshoppingcart'/>",
-		  data: {'action':action,'movieid':movieId},
+		  data: {'${AppConstants.PARAM_ACTION}':action,'${AppConstants.PARAM_MOVIE_ID}':movieId},
 		  success: function(data){
 			  $("#shoppingcart-itemcount").text(data.itemCount);
 		  },
@@ -188,7 +186,19 @@
 	
 	
 
-	
+	function initClearCartButton(){
+		$('#btn-clearcart').on('click',function(){
+    		$.ajax({
+    			  url: "<c:url value='/storefront/rest/clearshoppingcart'/>",
+    			  success: function(data){
+    				  console.debug("clearShoppingCart returned: "+data);
+    				  $("#shoppingcart-itemcount").text(data.itemCount);
+    				  $(".moviebox-container span.moviebox-shoppingcart").removeClass('text-success');
+    			  },
+    			  dataType: 'json'
+    			});
+		});
+	}
 	
 	
 
@@ -200,7 +210,13 @@
   <nav>
     <ul class="pagination"></ul>
   </nav>
+  <div>
+    <a href="shoppingcart" class="btn btn-primary">Check Out</a>
+    <button id="btn-clearcart" class="btn btn-secondary">Clear Cart</button>
+  </div>
+  <span class="small"><i class="fa fa-info-circle"></i>Click the shopping cart icon next to a movie to add/remove it to the cart.</span>
+  
   <%--modal box for movie details --%>
-  <div class="modal fade" id="moviedetails-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
+  <div class="modal fade" id="moviedetails-modal" tabindex="-1" role="dialog"></div>
   
   

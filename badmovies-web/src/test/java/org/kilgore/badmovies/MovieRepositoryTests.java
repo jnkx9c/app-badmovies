@@ -11,21 +11,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
 public class MovieRepositoryTests {
 
 	@Autowired
 	private MovieRepo movieRepo;
 	
-	@Test
+	//@Test
 	public void contextLoads() {
 		
 		System.out.println("movieRepo = "+movieRepo);
 	}
 	
 	
-	@Test
+	//@Test
 	public void testMovieCreate() {
 		Movie movie = new Movie();
 		movie.setTitle("Test Movie");

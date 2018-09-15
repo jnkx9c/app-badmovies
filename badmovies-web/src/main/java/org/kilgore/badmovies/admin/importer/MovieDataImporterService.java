@@ -7,7 +7,6 @@ import java.net.URL;
 import javax.annotation.PostConstruct;
 
 import org.kilgore.badmovies.entity.Movie;
-import org.kilgore.badmovies.entity.Rating;
 import org.kilgore.badmovies.repo.MovieRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,11 +35,9 @@ public class MovieDataImporterService {
 	
 	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
 		// TODO Auto-generated method stub
-		String apikey = "d4463eaa";
-		String imdbId = "tt0270846";
-		
-		System.setProperty("http.proxyHost", "proxy.wellsfargo.com");
-		System.setProperty("http.proxyPort", "8080");
+//		String apikey = "d4463eaa";
+//		String imdbId = "tt0270846";
+
 		
 		
 		ObjectMapper mapper = new ObjectMapper();
